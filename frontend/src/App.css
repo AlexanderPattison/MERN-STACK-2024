@@ -1,0 +1,139 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+}
+
+.App {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+nav {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+    nav a {
+        text-decoration: none;
+        color: #1877f2;
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    nav .nav-links {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+        justify-content: flex-end;
+    }
+
+        nav .nav-links a,
+        nav .nav-links button {
+            margin-left: 15px;
+        }
+
+        nav .nav-links span {
+            margin-right: 15px;
+            color: #1877f2;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+    nav button {
+        background-color: #1877f2;
+        color: #ffffff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        height: 28px;
+        line-height: 18px;
+        width: auto; /* Changed from 100% to auto */
+    }
+
+        nav button:hover {
+            background-color: #166fe5;
+        }
+
+h1, h2 {
+    color: #1877f2;
+}
+
+.content-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .content-card.auth {
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input {
+    padding: 10px;
+    border: 1px solid #dddfe2;
+    border-radius: 6px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #1877f2;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+}
+
+    button:hover {
+        background-color: #166fe5;
+    }
+
+.delete-account {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-size: 14px;
+    width: auto;
+    display: inline-block;
+}
+
+    .delete-account:hover {
+        background-color: #c82333;
+    }
+
+.error-message {
+    color: #dc3545;
+    margin-top: 10px;
+}
