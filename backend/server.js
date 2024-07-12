@@ -19,6 +19,9 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 const authRoutes = require('./authRoutes');
 app.use('/api/auth', authRoutes);
 
+const itemRoutes = require('./routes/itemRoutes');
+app.use('/api/items', itemRoutes);
+
 app.get('/', (req, res) => {
     res.send('MERN Auth API');
 });
