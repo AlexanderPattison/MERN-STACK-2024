@@ -31,6 +31,8 @@ app.use(session({
 // Routes
 const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
+const itemRoutes = require('./routes/itemRoutes');
+app.use('/api/items', itemRoutes);
 
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI);

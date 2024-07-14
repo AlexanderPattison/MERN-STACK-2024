@@ -1,21 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 
 function ItemList() {
     const [items, setItems] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchItems = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/items');
+                const response = await api.get('/items');
                 setItems(response.data);
+                setIsLoading(false);
             } catch (error) {
                 console.error('Error fetching items:', error);
+                setError('Failed to fetch items. Please try again later.');
+                setIsLoading(false);
             }
         };
 
         fetchItems();
     }, []);
+
+    if (isLoading) return <div>Loading items...</div>;
+    if (error) return <div>{error}</div>;
 
     return (
         <div className="item-list">
