@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
+import api from './utils/api';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import HomePage from './components/HomePage';
@@ -13,26 +14,28 @@ function AppContent() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        const storedUser = JSON.parse(localStorage.getItem('user'));
-        if (token && storedUser) {
-            setIsAuthenticated(true);
-            setUser(storedUser);
-        }
+        const checkAuthStatus = async () => {
+            try {
+                const response = await api.get('/auth/me');
+                setIsAuthenticated(true);
+                setUser(response.data);
+            } catch (error) {
+                setIsAuthenticated(false);
+                setUser(null);
+            }
+        };
+        checkAuthStatus();
     }, []);
 
-    const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setIsAuthenticated(false);
-        setUser(null);
-        navigate('/');
-    };
-
-    const handleDeleteAccount = () => {
-        setIsAuthenticated(false);
-        setUser(null);
-        navigate('/');
+    const handleLogout = async () => {
+        try {
+            await api.post('/auth/logout');
+            setIsAuthenticated(false);
+            setUser(null);
+            navigate('/');
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     return (
@@ -59,7 +62,7 @@ function AppContent() {
                     path="/dashboard"
                     element={
                         <PrivateRoute isAuthenticated={isAuthenticated}>
-                            <Dashboard onDeleteAccount={handleDeleteAccount} />
+                            <Dashboard setIsAuthenticated={setIsAuthenticated} setUser={setUser} />
                         </PrivateRoute>
                     }
                 />

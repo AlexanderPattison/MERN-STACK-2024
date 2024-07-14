@@ -1,28 +1,40 @@
 const express = require('express');
-const cors = require('cors');
 const mongoose = require('mongoose');
-
+const cors = require('cors');
+const session = require('express-session');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Middleware
+app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
+
 app.use(express.json());
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.log('MongoDB connection error:', err));
+// Session configuration
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: {
+        maxAge: 1000 * 60 * 60 * 24, // 1 day
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    }
+}));
 
 // Routes
-const authRoutes = require('./authRoutes');
+const authRoutes = require('./routes/authRoutes');
 app.use('/api/auth', authRoutes);
 
-app.get('/', (req, res) => {
-    res.send('MERN Auth API');
-});
+// MongoDB connection
+mongoose.connect(process.env.MONGO_URI);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT);

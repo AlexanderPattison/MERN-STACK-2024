@@ -62,7 +62,7 @@ nav {
         font-weight: bold;
         height: 28px;
         line-height: 18px;
-        width: auto; /* Changed from 100% to auto */
+        width: auto;
     }
 
         nav button:hover {
@@ -116,24 +116,32 @@ button {
         background-color: #166fe5;
     }
 
-.delete-account {
+.content-card .delete-account-btn {
     background-color: #dc3545;
     color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 5px;
+    padding: 6px 12px;
+    border-radius: 4px;
     cursor: pointer;
     margin-top: 20px;
-    font-size: 14px;
+    font-size: 12px;
     width: auto;
     display: inline-block;
+    line-height: 1.5;
 }
 
-    .delete-account:hover {
+    .content-card .delete-account-btn:hover {
         background-color: #c82333;
     }
 
 .error-message {
     color: #dc3545;
     margin-top: 10px;
+}
+
+/* Override any conflicting styles */
+.content-card .delete-account-btn {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    width: auto !important;
 }

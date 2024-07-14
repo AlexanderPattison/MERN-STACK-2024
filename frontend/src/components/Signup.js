@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
 
 function Signup({ setIsAuthenticated, setUser }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [message, setMessage] = useState('');
+    const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.post('http://localhost:5000/api/auth/signup', {
-                email,
-                password
-            });
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('user', JSON.stringify(response.data.user));
+            const response = await api.post('/auth/signup', { email, password });
             setIsAuthenticated(true);
             setUser(response.data.user);
-            setMessage('Signup successful!');
             navigate('/dashboard');
         } catch (error) {
-            setMessage(error.response?.data?.message || 'An error occurred');
+            setError(error.response?.data?.message || 'An error occurred during signup');
         }
     };
 
@@ -46,7 +40,7 @@ function Signup({ setIsAuthenticated, setUser }) {
                 />
                 <button type="submit">Sign Up</button>
             </form>
-            {message && <p>{message}</p>}
+            {error && <p className="error-message">{error}</p>}
             <p>Already have an account? <Link to="/login">Login</Link></p>
         </div>
     );

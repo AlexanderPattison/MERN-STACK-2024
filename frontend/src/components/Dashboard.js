@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React from 'react';
+import api from '../utils/api';
+import { useNavigate } from 'react-router-dom';
 
-function Dashboard({ onDeleteAccount }) {
-    const [deleteError, setDeleteError] = useState('');
+function Dashboard({ setIsAuthenticated, setUser }) {
+    const navigate = useNavigate();
 
     const handleDeleteAccount = async () => {
         if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
             try {
-                const token = localStorage.getItem('token');
-                await axios.delete('http://localhost:5000/api/auth/delete-account', {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
-
-                localStorage.removeItem('token');
-                localStorage.removeItem('user');
-                onDeleteAccount(); // Call the function passed from App.js
+                await api.delete('/auth/delete-account');
+                setIsAuthenticated(false);
+                setUser(null);
+                navigate('/');
             } catch (error) {
-                setDeleteError(error.response?.data?.message || 'An error occurred while deleting the account.');
+                alert('Failed to delete account. Please try again.');
             }
         }
     };
@@ -25,11 +22,7 @@ function Dashboard({ onDeleteAccount }) {
         <div className="content-card">
             <h1>Dashboard</h1>
             {/* Add your dashboard content here */}
-
-            <div className="dashboard-actions">
-                <button className="delete-account" onClick={handleDeleteAccount}>Delete Account</button>
-            </div>
-            {deleteError && <p className="error-message">{deleteError}</p>}
+            <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
         </div>
     );
 }
