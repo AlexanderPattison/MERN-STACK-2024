@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import api from './utils/api';
 import Login from './components/Login';
@@ -6,12 +6,14 @@ import Signup from './components/Signup';
 import HomePage from './components/HomePage';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
+import { ThemeContext } from './ThemeContext';
 import './App.css';
 
 function AppContent() {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const { darkMode, toggleDarkMode } = useContext(ThemeContext);
 
     useEffect(() => {
         const checkAuthStatus = async () => {
@@ -27,6 +29,10 @@ function AppContent() {
         checkAuthStatus();
     }, []);
 
+    useEffect(() => {
+        document.body.classList.toggle('dark-mode', darkMode);
+    }, [darkMode]);
+
     const handleLogout = async () => {
         try {
             await api.post('/auth/logout');
@@ -39,7 +45,7 @@ function AppContent() {
     };
 
     return (
-        <div className="App">
+        <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
             <nav>
                 <Link to="/">Home</Link>
                 <div className="nav-links">
@@ -52,6 +58,9 @@ function AppContent() {
                     ) : (
                         <Link to="/login">Login</Link>
                     )}
+                    <button onClick={toggleDarkMode} className="theme-toggle">
+                        {darkMode ? 'Light Mode' : 'Dark Mode'}
+                    </button>
                 </div>
             </nav>
             <Routes>

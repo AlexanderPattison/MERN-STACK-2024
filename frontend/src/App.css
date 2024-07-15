@@ -1,18 +1,35 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f0f2f5;
-}
-
 .App {
+    min-height: 100vh;
+    width: 100%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    box-sizing: border-box;
+    /* Light mode styles */
+    --bg-color: #f0f2f5;
+    --text-color: #1c1e21;
+    --card-bg: #ffffff;
+    --nav-bg: #ffffff;
+    --link-color: #1877f2;
+    --button-bg: #1877f2;
+    --button-text: #ffffff;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
+    .App.dark-mode {
+        /* Dark mode styles */
+        --bg-color: #18191a;
+        --text-color: #f5f6f7;
+        --card-bg: #242526;
+        --nav-bg: #242526;
+        --link-color: #4599ff;
+        --button-bg: #4599ff;
+        --button-text: #ffffff;
+    }
+
 nav {
-    background-color: #ffffff;
+    background-color: var(--nav-bg);
     padding: 10px 20px;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -24,7 +41,7 @@ nav {
 
     nav a {
         text-decoration: none;
-        color: #1877f2;
+        color: var(--link-color);
         font-weight: bold;
         font-size: 16px;
     }
@@ -43,7 +60,7 @@ nav {
 
         nav .nav-links span {
             margin-right: 15px;
-            color: #1877f2;
+            color: var(--link-color);
             font-weight: bold;
             white-space: nowrap;
             overflow: hidden;
@@ -52,8 +69,8 @@ nav {
         }
 
     nav button {
-        background-color: #1877f2;
-        color: #ffffff;
+        background-color: var(--button-bg);
+        color: var(--button-text);
         border: none;
         padding: 5px 10px;
         border-radius: 4px;
@@ -66,15 +83,15 @@ nav {
     }
 
         nav button:hover {
-            background-color: #166fe5;
+            opacity: 0.9;
         }
 
 h1, h2 {
-    color: #1877f2;
+    color: var(--link-color);
 }
 
 .content-card {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -98,11 +115,13 @@ input {
     font-size: 16px;
     width: 100%;
     box-sizing: border-box;
+    background-color: var(--bg-color);
+    color: var(--text-color);
 }
 
 button {
-    background-color: #1877f2;
-    color: #ffffff;
+    background-color: var(--button-bg);
+    color: var(--button-text);
     border: none;
     padding: 10px 20px;
     border-radius: 6px;
@@ -113,38 +132,8 @@ button {
 }
 
     button:hover {
-        background-color: #166fe5;
+        opacity: 0.9;
     }
-
-.content-card .delete-account-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 20px;
-    font-size: 12px;
-    width: auto;
-    display: inline-block;
-    line-height: 1.5;
-}
-
-    .content-card .delete-account-btn:hover {
-        background-color: #c82333;
-    }
-
-.error-message {
-    color: #dc3545;
-    margin-top: 10px;
-}
-
-/* Override any conflicting styles */
-.content-card .delete-account-btn {
-    padding: 6px 12px !important;
-    font-size: 12px !important;
-    width: auto !important;
-}
 
 .items-grid {
     display: grid;
@@ -154,10 +143,11 @@ button {
 }
 
 .item-card {
-    border: 1px solid #ddd;
+    border: 1px solid var(--text-color);
     border-radius: 8px;
     padding: 10px;
     text-align: center;
+    background-color: var(--card-bg);
 }
 
     .item-card img {
@@ -166,34 +156,8 @@ button {
         border-radius: 4px;
     }
 
-.password-strength {
-    margin-top: 5px;
-    padding: 5px;
-    border-radius: 3px;
-    font-size: 0.9em;
+.theme-toggle {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    border: 1px solid var(--text-color);
 }
-
-    .password-strength.very-weak {
-        background-color: #ffcccb;
-        color: #d8000c;
-    }
-
-    .password-strength.weak {
-        background-color: #ffeecc;
-        color: #9f6000;
-    }
-
-    .password-strength.medium {
-        background-color: #fff6cc;
-        color: #968800;
-    }
-
-    .password-strength.strong {
-        background-color: #d6ffcc;
-        color: #276900;
-    }
-
-    .password-strength.very-strong {
-        background-color: #ccffcc;
-        color: #008000;
-    }
