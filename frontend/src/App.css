@@ -165,3 +165,35 @@ button {
         height: auto;
         border-radius: 4px;
     }
+
+.password-strength {
+    margin-top: 5px;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+    .password-strength.very-weak {
+        background-color: #ffcccb;
+        color: #d8000c;
+    }
+
+    .password-strength.weak {
+        background-color: #ffeecc;
+        color: #9f6000;
+    }
+
+    .password-strength.medium {
+        background-color: #fff6cc;
+        color: #968800;
+    }
+
+    .password-strength.strong {
+        background-color: #d6ffcc;
+        color: #276900;
+    }
+
+    .password-strength.very-strong {
+        background-color: #ccffcc;
+        color: #008000;
+    }
