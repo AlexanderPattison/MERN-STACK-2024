@@ -4,12 +4,22 @@ const User = require('../models/User');
 const { isAuthenticated } = require('../auth/middleware/authMiddleware');
 const router = express.Router();
 
+function validateEmail(email) {
+    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return re.test(email);
+}
+
 router.post('/signup', async (req, res) => {
     try {
         const { email, password } = req.body;
+
+        if (!validateEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email format' });
+        }
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'Authentication failed' });
+            return res.status(400).json({ message: 'User already exists' });
         }
         const user = new User({ email, password });
         await user.save();
