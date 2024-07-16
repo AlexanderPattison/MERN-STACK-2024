@@ -22,7 +22,9 @@ function Dashboard({ setIsAuthenticated, setUser }) {
         <div className="content-card">
             <h1>Dashboard</h1>
             {/* Add your dashboard content here */}
-            <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
+            <div>
+                <button className="delete-account-btn" onClick={handleDeleteAccount}>Delete Account</button>
+            </div>
         </div>
     );
 }

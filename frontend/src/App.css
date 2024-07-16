@@ -224,3 +224,24 @@ button {
     display: flex;
     align-items: center;
 }
+
+.delete-account-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    max-width: 120px;
+    height: 28px;
+    line-height: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .delete-account-btn:hover {
+        background-color: #c82333;
+    }
