@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import api from '../utils/api';
 import { ThemeContext } from '../ThemeContext';
 import SearchBar from './SearchBar';
 
-function ItemList() {
+function ItemList({ fetchCounts }) {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
     const [currentSearchTerm, setCurrentSearchTerm] = useState('');
+    const [wishlist, setWishlist] = useState([]);
+    const [cart, setCart] = useState({});
     const { darkMode } = useContext(ThemeContext);
 
     const fetchItems = async (searchTerm = '') => {
@@ -24,12 +27,61 @@ function ItemList() {
         }
     };
 
+    const fetchWishlistAndCart = async () => {
+        try {
+            const wishlistResponse = await api.get('/auth/wishlist');
+            setWishlist(wishlistResponse.data.map(item => item._id));
+
+            const cartResponse = await api.get('/auth/cart');
+            setCart(cartResponse.data.reduce((acc, item) => {
+                acc[item.item._id] = item.quantity;
+                return acc;
+            }, {}));
+        } catch (error) {
+            console.error('Error fetching wishlist and cart:', error);
+        }
+    };
+
     useEffect(() => {
         fetchItems();
+        fetchWishlistAndCart();
     }, []);
 
     const handleSearch = (searchTerm) => {
         fetchItems(searchTerm);
+    };
+
+    const addToWishlist = async (itemId) => {
+        try {
+            await api.post('/auth/wishlist', { itemId });
+            setWishlist([...wishlist, itemId]);
+            if (fetchCounts) fetchCounts();
+        } catch (error) {
+            console.error('Error adding to wishlist:', error);
+            alert('Failed to add item to wishlist');
+        }
+    };
+
+    const removeFromWishlist = async (itemId) => {
+        try {
+            await api.delete(`/auth/wishlist/${itemId}`);
+            setWishlist(wishlist.filter(id => id !== itemId));
+            if (fetchCounts) fetchCounts();
+        } catch (error) {
+            console.error('Error removing from wishlist:', error);
+            alert('Failed to remove item from wishlist');
+        }
+    };
+
+    const addToCart = async (itemId, quantity = 1) => {
+        try {
+            await api.post('/auth/cart', { itemId, quantity });
+            setCart({ ...cart, [itemId]: (cart[itemId] || 0) + quantity });
+            if (fetchCounts) fetchCounts();
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('Failed to add item to cart');
+        }
     };
 
     if (isLoading) return <div>Loading items...</div>;
@@ -53,6 +105,26 @@ function ItemList() {
                             <h3>{item.name}</h3>
                             <p>{item.description}</p>
                             <p>Price: ${item.price.toFixed(2)}</p>
+                            <div className="item-actions">
+                                <button
+                                    onClick={() => wishlist.includes(item._id) ? removeFromWishlist(item._id) : addToWishlist(item._id)}
+                                    className={`wishlist-btn ${wishlist.includes(item._id) ? 'active' : ''}`}
+                                >
+                                    <FaHeart /> {wishlist.includes(item._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                </button>
+                                <div className="cart-action">
+                                    <input
+                                        type="number"
+                                        min="1"
+                                        defaultValue="1"
+                                        className="quantity-input"
+                                    />
+                                    <button onClick={(e) => addToCart(item._id, parseInt(e.target.previousSibling.value))} className="cart-btn">
+                                        <FaShoppingCart /> Add to Cart
+                                    </button>
+                                </div>
+                                {cart[item._id] > 0 && <p>In cart: {cart[item._id]}</p>}
+                            </div>
                         </div>
                     ))
                 ) : (

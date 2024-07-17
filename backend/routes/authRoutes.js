@@ -95,4 +95,101 @@ router.get('/me', isAuthenticated, async (req, res) => {
     }
 });
 
+router.post('/wishlist', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        const { itemId } = req.body;
+        if (!user.wishlist.includes(itemId)) {
+            user.wishlist.push(itemId);
+            await user.save();
+        }
+        res.json({ message: 'Item added to wishlist' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding item to wishlist' });
+    }
+});
+
+router.post('/cart', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        const { itemId } = req.body;
+        const existingItem = user.cart.find(item => item.item.toString() === itemId);
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            user.cart.push({ item: itemId });
+        }
+        await user.save();
+        res.json({ message: 'Item added to cart' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error adding item to cart' });
+    }
+});
+
+router.get('/wishlist', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId).populate('wishlist');
+        res.json(user.wishlist);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching wishlist' });
+    }
+});
+
+router.delete('/wishlist/:itemId', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        const { itemId } = req.params;
+        user.wishlist = user.wishlist.filter(id => id.toString() !== itemId);
+        await user.save();
+        res.json({ message: 'Item removed from wishlist' });
+    } catch (error) {
+        console.error('Error removing item from wishlist:', error);
+        res.status(500).json({ message: 'Error removing item from wishlist' });
+    }
+});
+
+router.get('/cart', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId).populate('cart.item');
+        res.json(user.cart);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching cart' });
+    }
+});
+
+router.put('/cart/:itemId', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        const { itemId } = req.params;
+        const { quantity } = req.body;
+
+        const cartItem = user.cart.find(item => item.item.toString() === itemId);
+        if (cartItem) {
+            cartItem.quantity = quantity;
+            if (quantity <= 0) {
+                user.cart = user.cart.filter(item => item.item.toString() !== itemId);
+            }
+        }
+
+        await user.save();
+        res.json({ message: 'Cart updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating cart' });
+    }
+});
+
+router.delete('/cart/:itemId', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.session.userId);
+        const { itemId } = req.params;
+
+        user.cart = user.cart.filter(item => item.item.toString() !== itemId);
+
+        await user.save();
+        res.json({ message: 'Item removed from cart' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error removing item from cart' });
+    }
+});
+
 module.exports = router;
