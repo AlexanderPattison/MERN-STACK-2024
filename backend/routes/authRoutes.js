@@ -112,12 +112,12 @@ router.post('/wishlist', isAuthenticated, async (req, res) => {
 router.post('/cart', isAuthenticated, async (req, res) => {
     try {
         const user = await User.findById(req.session.userId);
-        const { itemId } = req.body;
+        const { itemId, quantity } = req.body;
         const existingItem = user.cart.find(item => item.item.toString() === itemId);
         if (existingItem) {
-            existingItem.quantity += 1;
+            existingItem.quantity += quantity;
         } else {
-            user.cart.push({ item: itemId });
+            user.cart.push({ item: itemId, quantity });
         }
         await user.save();
         res.json({ message: 'Item added to cart' });

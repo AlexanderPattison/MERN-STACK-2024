@@ -27,25 +27,26 @@ function ItemList({ fetchCounts }) {
         }
     };
 
+    useEffect(() => {
+        fetchItems();
+        fetchWishlistAndCart();
+    }, []);
+
     const fetchWishlistAndCart = async () => {
         try {
             const wishlistResponse = await api.get('/auth/wishlist');
             setWishlist(wishlistResponse.data.map(item => item._id));
 
             const cartResponse = await api.get('/auth/cart');
-            setCart(cartResponse.data.reduce((acc, item) => {
+            const cartData = cartResponse.data.reduce((acc, item) => {
                 acc[item.item._id] = item.quantity;
                 return acc;
-            }, {}));
+            }, {});
+            setCart(cartData);
         } catch (error) {
             console.error('Error fetching wishlist and cart:', error);
         }
     };
-
-    useEffect(() => {
-        fetchItems();
-        fetchWishlistAndCart();
-    }, []);
 
     const handleSearch = (searchTerm) => {
         fetchItems(searchTerm);
@@ -76,7 +77,10 @@ function ItemList({ fetchCounts }) {
     const addToCart = async (itemId, quantity = 1) => {
         try {
             await api.post('/auth/cart', { itemId, quantity });
-            setCart({ ...cart, [itemId]: (cart[itemId] || 0) + quantity });
+            setCart(prevCart => ({
+                ...prevCart,
+                [itemId]: (prevCart[itemId] || 0) + quantity
+            }));
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -119,7 +123,10 @@ function ItemList({ fetchCounts }) {
                                         defaultValue="1"
                                         className="quantity-input"
                                     />
-                                    <button onClick={(e) => addToCart(item._id, parseInt(e.target.previousSibling.value))} className="cart-btn">
+                                    <button onClick={(e) => {
+                                        const quantity = parseInt(e.target.previousSibling.value);
+                                        addToCart(item._id, quantity);
+                                    }} className="cart-btn">
                                         <FaShoppingCart /> Add to Cart
                                     </button>
                                 </div>
