@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Item = require('../models/Item');
-const { isAuthenticated } = require('../auth/middleware/authMiddleware');
+const { isAuthenticated } = require('../middleware/authMiddleware');
 
 // Get user's wishlist
 router.get('/', isAuthenticated, async (req, res) => {

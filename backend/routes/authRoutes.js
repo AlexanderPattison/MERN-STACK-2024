@@ -1,7 +1,7 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-const { isAuthenticated } = require('../auth/middleware/authMiddleware');
+const { isAuthenticated } = require('../middleware/authMiddleware');
 const router = express.Router();
 
 function validateEmail(email) {
