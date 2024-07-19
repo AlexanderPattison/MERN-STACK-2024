@@ -27,11 +27,6 @@ function ItemList({ fetchCounts }) {
         }
     };
 
-    useEffect(() => {
-        fetchItems();
-        fetchWishlistAndCart();
-    }, []);
-
     const fetchWishlistAndCart = async () => {
         try {
             const wishlistResponse = await api.get('/auth/wishlist');
@@ -47,6 +42,11 @@ function ItemList({ fetchCounts }) {
             console.error('Error fetching wishlist and cart:', error);
         }
     };
+
+    useEffect(() => {
+        fetchItems();
+        fetchWishlistAndCart();
+    }, []);
 
     const handleSearch = (searchTerm) => {
         fetchItems(searchTerm);
