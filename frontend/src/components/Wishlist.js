@@ -1,3 +1,5 @@
+// frontend/src/components/Wishlist.js
+
 import React, { useState, useEffect } from 'react';
 import { FaTrash, FaShoppingCart } from 'react-icons/fa';
 import api from '../utils/api';
@@ -13,7 +15,7 @@ function Wishlist({ fetchCounts }) {
 
     const fetchWishlist = async () => {
         try {
-            const response = await api.get('/auth/wishlist');
+            const response = await api.get('/wishlist');
             setWishlistItems(response.data);
             setIsLoading(false);
         } catch (error) {
@@ -25,7 +27,7 @@ function Wishlist({ fetchCounts }) {
 
     const removeFromWishlist = async (itemId) => {
         try {
-            await api.delete(`/auth/wishlist/${itemId}`);
+            await api.delete(`/wishlist/${itemId}`);
             setWishlistItems(wishlistItems.filter(item => item._id !== itemId));
             if (fetchCounts) fetchCounts();
         } catch (error) {
@@ -36,7 +38,7 @@ function Wishlist({ fetchCounts }) {
 
     const addToCart = async (itemId) => {
         try {
-            await api.post('/auth/cart', { itemId, quantity: 1 });
+            await api.post('/cart/add', { itemId, quantity: 1 });
             alert('Item added to cart');
             if (fetchCounts) fetchCounts();
         } catch (error) {

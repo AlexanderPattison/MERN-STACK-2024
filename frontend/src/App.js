@@ -23,10 +23,10 @@ function AppContent() {
     const fetchCounts = useCallback(async () => {
         if (isAuthenticated) {
             try {
-                const wishlistResponse = await api.get('/auth/wishlist');
+                const wishlistResponse = await api.get('/wishlist');
                 setWishlistCount(wishlistResponse.data.length);
 
-                const cartResponse = await api.get('/auth/cart');
+                const cartResponse = await api.get('/cart');
                 setCartCount(cartResponse.data.reduce((total, item) => total + item.quantity, 0));
             } catch (error) {
                 console.error('Error fetching counts:', error);

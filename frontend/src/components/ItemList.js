@@ -1,3 +1,5 @@
+// frontend/src/components/ItemList.js
+
 import React, { useState, useEffect, useContext } from 'react';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import api from '../utils/api';
@@ -29,10 +31,10 @@ function ItemList({ fetchCounts }) {
 
     const fetchWishlistAndCart = async () => {
         try {
-            const wishlistResponse = await api.get('/auth/wishlist');
+            const wishlistResponse = await api.get('/wishlist');
             setWishlist(wishlistResponse.data.map(item => item._id));
 
-            const cartResponse = await api.get('/auth/cart');
+            const cartResponse = await api.get('/cart');
             const cartData = cartResponse.data.reduce((acc, item) => {
                 acc[item.item._id] = item.quantity;
                 return acc;
@@ -54,7 +56,7 @@ function ItemList({ fetchCounts }) {
 
     const addToWishlist = async (itemId) => {
         try {
-            await api.post('/auth/wishlist', { itemId });
+            await api.post('/wishlist/add', { itemId });
             setWishlist([...wishlist, itemId]);
             if (fetchCounts) fetchCounts();
         } catch (error) {
@@ -65,7 +67,7 @@ function ItemList({ fetchCounts }) {
 
     const removeFromWishlist = async (itemId) => {
         try {
-            await api.delete(`/auth/wishlist/${itemId}`);
+            await api.delete(`/wishlist/${itemId}`);
             setWishlist(wishlist.filter(id => id !== itemId));
             if (fetchCounts) fetchCounts();
         } catch (error) {
@@ -76,7 +78,7 @@ function ItemList({ fetchCounts }) {
 
     const addToCart = async (itemId, quantity = 1) => {
         try {
-            await api.post('/auth/cart', { itemId, quantity });
+            await api.post('/cart/add', { itemId, quantity });
             setCart(prevCart => ({
                 ...prevCart,
                 [itemId]: (prevCart[itemId] || 0) + quantity

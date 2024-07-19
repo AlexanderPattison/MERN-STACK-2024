@@ -1,26 +1,10 @@
+// backend/routes/itemRoutes.js
+
 const express = require('express');
 const router = express.Router();
-const Item = require('../models/Item');
+const itemController = require('../controllers/itemController');
 
-router.get('/', async (req, res) => {
-    try {
-        const { search } = req.query;
-        let query = {};
-
-        if (search) {
-            query = {
-                $or: [
-                    { name: { $regex: search, $options: 'i' } },
-                    { description: { $regex: search, $options: 'i' } }
-                ]
-            };
-        }
-
-        const items = await Item.find(query);
-        res.json(items);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error' });
-    }
-});
+router.get('/', itemController.getAllItems);
+router.get('/:id', itemController.getItemById);
 
 module.exports = router;

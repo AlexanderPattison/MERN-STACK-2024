@@ -1,3 +1,5 @@
+// frontend/src/components/Cart.js
+
 import React, { useState, useEffect } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import api from '../utils/api';
@@ -13,7 +15,7 @@ function Cart({ fetchCounts }) {
 
     const fetchCart = async () => {
         try {
-            const response = await api.get('/auth/cart');
+            const response = await api.get('/cart');
             setCartItems(response.data);
             setIsLoading(false);
         } catch (error) {
@@ -25,7 +27,7 @@ function Cart({ fetchCounts }) {
 
     const updateQuantity = async (itemId, newQuantity) => {
         try {
-            await api.put(`/auth/cart/${itemId}`, { quantity: newQuantity });
+            await api.put(`/cart/${itemId}`, { quantity: newQuantity });
             setCartItems(cartItems.map(item =>
                 item.item._id === itemId ? { ...item, quantity: newQuantity } : item
             ));
@@ -38,7 +40,7 @@ function Cart({ fetchCounts }) {
 
     const removeFromCart = async (itemId) => {
         try {
-            await api.delete(`/auth/cart/${itemId}`);
+            await api.delete(`/cart/${itemId}`);
             setCartItems(cartItems.filter(item => item.item._id !== itemId));
             if (fetchCounts) fetchCounts();
         } catch (error) {
