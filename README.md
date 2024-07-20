@@ -1,12 +1,10 @@
-Being built with the assistance of Claude AI.
-
 # MERN-STACK-2024
 
 A comprehensive project using the MERN stack (MongoDB, Express.js, React, and Node.js) for building a full-fledged web application. This project demonstrates the integration of these technologies to create a robust and scalable web application.
 
 ## Features
 
-- **User Authentication**: Secure login and registration using JWT.
+- **User Authentication**: Secure login and registration using session-based authentication.
 - **CRUD Operations**: Full Create, Read, Update, Delete functionality.
 - **Responsive Design**: Mobile-friendly design using CSS and Bootstrap.
 - **RESTful API**: Backend API development with Express and Node.js.
@@ -43,8 +41,9 @@ A comprehensive project using the MERN stack (MongoDB, Express.js, React, and No
 
 4. Create a `.env` file in the `backend` directory and add the following environment variables:
     ```plaintext
+    port=5000
     MONGO_URI=your_mongodb_uri
-    JWT_SECRET=your_jwt_secret
+    SESSION_SECRET=your_session_secret
     ```
 
 5. Start the development servers:
