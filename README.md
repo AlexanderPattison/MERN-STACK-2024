@@ -4,7 +4,7 @@ A comprehensive project using the MERN stack (MongoDB, Express.js, React, and No
 
 ## Features
 
-- **User Authentication**: Secure login and registration using JWT.
+- **User Authentication**: Secure login and registration using session-based authentication.
 - **CRUD Operations**: Full Create, Read, Update, Delete functionality.
 - **Responsive Design**: Mobile-friendly design using CSS and Bootstrap.
 - **RESTful API**: Backend API development with Express and Node.js.
