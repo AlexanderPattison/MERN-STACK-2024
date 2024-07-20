@@ -1,5 +1,3 @@
-Being built with the assistance of Claude AI.
-
 # MERN-STACK-2024
 
 A comprehensive project using the MERN stack (MongoDB, Express.js, React, and Node.js) for building a full-fledged web application. This project demonstrates the integration of these technologies to create a robust and scalable web application.
