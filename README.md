@@ -42,7 +42,7 @@ A comprehensive project using the MERN stack (MongoDB, Express.js, React, and No
 4. Create a `.env` file in the `backend` directory and add the following environment variables:
     ```plaintext
     MONGO_URI=your_mongodb_uri
-    JWT_SECRET=your_jwt_secret
+    SESSION_SECRET=your_session_secret
     ```
 
 5. Start the development servers:
