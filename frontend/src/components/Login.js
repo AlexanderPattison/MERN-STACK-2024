@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../utils/api';
 import { useNavigate, Link } from 'react-router-dom';
 
@@ -7,6 +7,13 @@ function Login({ setIsAuthenticated, setUser }) {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Fetch CSRF token when component mounts
+        api.get('/csrf-token').catch(error => {
+            console.error('Error fetching CSRF token:', error);
+        });
+    }, []);
 
     const handleSubmit = async (e) => {
         e.preventDefault();

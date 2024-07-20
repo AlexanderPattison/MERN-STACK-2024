@@ -1,10 +1,9 @@
-// backend/server.js
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
+const csrf = require('csurf');
 require('dotenv').config();
 
 const app = express();
@@ -27,8 +26,37 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // 1 day
         secure: process.env.NODE_ENV === 'production',
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        httpOnly: true,
     }
 }));
+
+// CSRF protection
+const csrfProtection = csrf({
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    }
+});
+
+// Apply CSRF protection to all routes except the CSRF token route and auth routes
+app.use((req, res, next) => {
+    if (req.path === '/api/csrf-token' || req.path.startsWith('/api/auth/')) {
+        next();
+    } else {
+        csrfProtection(req, res, next);
+    }
+});
+
+// CSRF error handler
+app.use(function (err, req, res, next) {
+    if (err.code !== 'EBADCSRFTOKEN') return next(err);
+    res.status(403).json({ message: 'CSRF token validation failed' });
+});
+
+// Add a route to get the CSRF token
+app.get('/api/csrf-token', (req, res) => {
+    res.json({ csrfToken: req.csrfToken() });
+});
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -52,7 +80,7 @@ mongoose.connect(process.env.MONGO_URI, {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).send('Something broke!');
+    res.status(500).json({ message: 'Internal server error', error: err.message });
 });
 
 // Start server

@@ -1,5 +1,3 @@
-// backend/controllers/authController.js
-
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
@@ -28,6 +26,7 @@ exports.signup = async (req, res) => {
             user: { id: user._id, email: user.email }
         });
     } catch (error) {
+        console.error('Signup error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -50,6 +49,7 @@ exports.login = async (req, res) => {
             res.status(400).json({ message: 'Authentication failed' });
         }
     } catch (error) {
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Internal server error' });
     }
 };
@@ -91,102 +91,5 @@ exports.getMe = async (req, res) => {
         res.json(user);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-exports.addToWishlist = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId);
-        const { itemId } = req.body;
-        if (!user.wishlist.includes(itemId)) {
-            user.wishlist.push(itemId);
-            await user.save();
-        }
-        res.json({ message: 'Item added to wishlist' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error adding item to wishlist' });
-    }
-};
-
-exports.addToCart = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId);
-        const { itemId, quantity } = req.body;
-        const existingItem = user.cart.find(item => item.item.toString() === itemId);
-        if (existingItem) {
-            existingItem.quantity += quantity;
-        } else {
-            user.cart.push({ item: itemId, quantity });
-        }
-        await user.save();
-        res.json({ message: 'Item added to cart' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error adding item to cart' });
-    }
-};
-
-exports.getWishlist = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId).populate('wishlist');
-        res.json(user.wishlist);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching wishlist' });
-    }
-};
-
-exports.removeFromWishlist = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId);
-        const { itemId } = req.params;
-        user.wishlist = user.wishlist.filter(id => id.toString() !== itemId);
-        await user.save();
-        res.json({ message: 'Item removed from wishlist' });
-    } catch (error) {
-        console.error('Error removing item from wishlist:', error);
-        res.status(500).json({ message: 'Error removing item from wishlist' });
-    }
-};
-
-exports.getCart = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId).populate('cart.item');
-        res.json(user.cart);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching cart' });
-    }
-};
-
-exports.updateCart = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId);
-        const { itemId } = req.params;
-        const { quantity } = req.body;
-
-        const cartItem = user.cart.find(item => item.item.toString() === itemId);
-        if (cartItem) {
-            cartItem.quantity = quantity;
-            if (quantity <= 0) {
-                user.cart = user.cart.filter(item => item.item.toString() !== itemId);
-            }
-        }
-
-        await user.save();
-        res.json({ message: 'Cart updated successfully' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error updating cart' });
-    }
-};
-
-exports.removeFromCart = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId);
-        const { itemId } = req.params;
-
-        user.cart = user.cart.filter(item => item.item.toString() !== itemId);
-
-        await user.save();
-        res.json({ message: 'Item removed from cart' });
-    } catch (error) {
-        res.status(500).json({ message: 'Error removing item from cart' });
     }
 };
