@@ -60,17 +60,16 @@ This project is a full-stack e-commerce application built using the MERN (MongoD
     cd ../frontend
     npm install
     ```
-3. Set up environment variables:
-Create a .env file in the backend directory and add the following:
+4. Set up environment variables: Create a .env file in the backend directory and add the following:
     ```plaintext
     NODE_ENV=development
     PORT=5000
     MONGO_URI=your_mongodb_connection_string
     SESSION_SECRET=your_session_secret
     ```
-Replace your_mongodb_connection_string and your_session_secret with your actual MongoDB connection string and a secure random string.
+    Replace your_mongodb_connection_string and your_session_secret with your actual MongoDB connection string and a secure random string.
 
-4. Set up HTTPS:
+5. Set up HTTPS:
 Generate self-signed certificates for development:
     ```bash
     openssl req -nodes -new -x509 -keyout server.key -out server.cert
