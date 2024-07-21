@@ -4,17 +4,22 @@ const cors = require('cors');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const csrf = require('csurf');
+const cookieParser = require('cookie-parser');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
 
 // Middleware
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: process.env.NODE_ENV === 'production' ? 'https://yourdomain.com' : 'https://localhost:3000',
     credentials: true,
 }));
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Session configuration
 app.use(session({
@@ -24,31 +29,17 @@ app.use(session({
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 1 day
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        secure: true, // Set to true for HTTPS
+        sameSite: 'none', // Required for cross-site cookie
         httpOnly: true,
     }
 }));
 
 // CSRF protection
-const csrfProtection = csrf({
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    }
-});
-
-// Apply CSRF protection to all routes except the CSRF token route and auth routes
-app.use((req, res, next) => {
-    if (req.path === '/api/csrf-token' || req.path.startsWith('/api/auth/')) {
-        next();
-    } else {
-        csrfProtection(req, res, next);
-    }
-});
+app.use(csrf({ cookie: true }));
 
 // CSRF error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
     if (err.code !== 'EBADCSRFTOKEN') return next(err);
     res.status(403).json({ message: 'CSRF token validation failed' });
 });
@@ -80,11 +71,16 @@ mongoose.connect(process.env.MONGO_URI, {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ message: 'Internal server error', error: err.message });
+    res.status(500).json({ message: 'Internal server error' });
 });
 
-// Start server
+// HTTPS server
+const httpsOptions = {
+    key: fs.readFileSync(path.join(__dirname, '..', 'server.key')),
+    cert: fs.readFileSync(path.join(__dirname, '..', 'server.cert'))
+};
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+https.createServer(httpsOptions, app).listen(PORT, () => {
+    console.log(`HTTPS Server is running on port ${PORT}`);
 });
