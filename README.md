@@ -1,61 +1,132 @@
-# MERN-STACK-2024
+# MERN Stack E-Commerce Application
 
-A comprehensive project using the MERN stack (MongoDB, Express.js, React, and Node.js) for building a full-fledged web application. This project demonstrates the integration of these technologies to create a robust and scalable web application.
+This project is a full-stack e-commerce application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It features user authentication, product browsing, wishlist functionality, and a shopping cart system.
 
 ## Features
 
-- **User Authentication**: Secure login and registration using session-based authentication.
-- **CRUD Operations**: Full Create, Read, Update, Delete functionality.
-- **Responsive Design**: Mobile-friendly design using CSS and Bootstrap.
-- **RESTful API**: Backend API development with Express and Node.js.
-- **MongoDB Integration**: Data storage and management with MongoDB.
-- **State Management**: Efficient state management using React Hooks and Context API.
+- **User Authentication**: Sign up, log in, and log out functionality
+- **Product Browsing**: View and search for products
+- **Wishlist**: Add and remove items from a personal wishlist
+- **Shopping Cart**: Add items to cart, adjust quantities, and remove items
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Mode**: Toggle between light and dark themes
 
-## Installation
-
-### Prerequisites
+## Tech Stack
+### Backend:
 
 - Node.js
-- npm
+- Express.js
+- MongoDB
+- Mongoose
+- bcryptjs for password hashing
+- express-session for session management
+- connect-mongo for storing sessions in MongoDB
+- express-rate-limit for API rate limiting
+
+### Frontend:
+
+- React.js
+- React Router for navigation
+- Axios for API requests
+- React Icons
+
+### Security:
+
+- HTTPS
+- CSRF protection
+- Secure session management
+
+## Prerequisites
+
+- Node.js (v14 or later recommended)
 - MongoDB
 
-### Steps
+### Installation
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/AlexanderPattison/MERN-STACK-2024.git
-    cd MERN-STACK-2024
+    git clone https://github.com/yourusername/mern-ecommerce.git
+    cd mern-ecommerce
     ```
 
-2. Install server dependencies:
+2. Install backend dependencies:
     ```bash
     cd backend
     npm install
     ```
 
-3. Install client dependencies:
+3. Install frontend dependencies:
     ```bash
-    cd frontend
+    cd ../frontend
     npm install
     ```
-
-4. Create a `.env` file in the `backend` directory and add the following environment variables:
+3. Set up environment variables:
+Create a .env file in the backend directory and add the following:
     ```plaintext
-    port=5000
-    MONGO_URI=your_mongodb_uri
+    NODE_ENV=development
+    PORT=5000
+    MONGO_URI=your_mongodb_connection_string
     SESSION_SECRET=your_session_secret
     ```
+Replace your_mongodb_connection_string and your_session_secret with your actual MongoDB connection string and a secure random string.
 
-5. Start the development servers:
+4. Set up HTTPS:
+Generate self-signed certificates for development:
     ```bash
-    # In the backend directory
-    npm run dev
-
-    # In the frontend directory
-    npm start
+    openssl req -nodes -new -x509 -keyout server.key -out server.cert
     ```
 
-## Usage
+### Running the Application
 
-- Visit `http://localhost:3000` to view the application.
-- Use Postman or any other API client to test the backend endpoints at `http://localhost:5000/api`.
+Start the backend server:
+    ```bash
+    cd backend
+    npm start
+    ```
+In a new terminal, start the frontend development server:
+    ```bash
+    cd frontend
+    npm start
+    ```
+Open https://localhost:3000 in your browser to view the application.
+
+### Seeding the Database
+To populate the database with sample products:
+
+1. Ensure your MongoDB is running and connection string is correct in .env
+2. Run the seeding script:
+    ```bash
+    cd backend
+    node seedDatabase.js
+    ```
+
+### Testing
+Run backend tests:
+    ```bash
+    cd backend
+    npm test
+    ```
+
+Run frontend tests:
+    ```bash
+    cd frontend
+    npm test
+    ```
+
+### Deployment
+For production deployment:
+
+1. Build the React frontend:
+    ```bash
+    cd frontend
+    npm run build
+    ```
+2. Set up your production environment variables in the backend .env file
+3. Use a process manager like PM2 to run the Node.js server
+4. Set up a reverse proxy with Nginx or Apache to serve the frontend build and proxy API requests to the backend
+
+## Contributing
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+This project is licensed under the MIT License.
