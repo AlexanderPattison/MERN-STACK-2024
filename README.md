@@ -4,6 +4,7 @@ A comprehensive project using the MERN stack (MongoDB, Express.js, React, and No
 
 ## Features
 
+- **Self-Certification**: Self-cert for HTTPS. This should eventually change by use of properly signed certificates from trusted authorities for production deployments.
 - **User Authentication**: Secure login and registration using session-based authentication.
 - **CRUD Operations**: Full Create, Read, Update, Delete functionality.
 - **Responsive Design**: Mobile-friendly design using CSS and Bootstrap.
@@ -41,9 +42,13 @@ A comprehensive project using the MERN stack (MongoDB, Express.js, React, and No
 
 4. Create a `.env` file in the `backend` directory and add the following environment variables:
     ```plaintext
-    port=5000
-    MONGO_URI=your_mongodb_uri
-    SESSION_SECRET=your_session_secret
+    NODE_ENV=development
+    HTTPS=true
+    SSL_CRT_FILE=../server.cert
+    SSL_KEY_FILE=../server.key
+    PORT=5000
+    MONGO_URI=
+    SESSION_SECRET=
     ```
 
 5. Start the development servers:
