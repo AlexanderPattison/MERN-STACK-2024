@@ -63,6 +63,9 @@ This project is a full-stack e-commerce application built using the MERN (MongoD
 4. Set up environment variables: Create a .env file in the backend directory and add the following:
     ```plaintext
     NODE_ENV=development
+    HTTPS=true
+    SSL_CRT_FILE=../server.cert
+    SSL_KEY_FILE=../server.key
     PORT=5000
     MONGO_URI=your_mongodb_connection_string
     SESSION_SECRET=your_session_secret
@@ -77,12 +80,12 @@ Generate self-signed certificates for development:
 
 ### Running the Application
 
-Start the backend server:
+1. Start the backend server:
     ```bash
     cd backend
-    npm start
+    npm run dev
     ```
-In a new terminal, start the frontend development server:
+2. In a new terminal, start the frontend development server:
     ```bash
     cd frontend
     npm start
@@ -100,13 +103,13 @@ To populate the database with sample products:
     ```
 
 ### Testing
-Run backend tests:
+1. Run backend tests:
     ```bash
     cd backend
     npm test
     ```
 
-Run frontend tests:
+2. Run frontend tests:
     ```bash
     cd frontend
     npm test
