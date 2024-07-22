@@ -1,3 +1,5 @@
+// backend/server.js
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -8,6 +10,7 @@ const cookieParser = require('cookie-parser');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const sanitize = require('./middleware/sanitizeMiddleware');
 require('dotenv').config();
 
 const app = express();
@@ -20,6 +23,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
+app.use(sanitize);  // Apply sanitization to all routes
 
 // Session configuration
 app.use(session({
