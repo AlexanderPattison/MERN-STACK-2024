@@ -35,7 +35,7 @@ This project is a full-stack e-commerce application built using the MERN (MongoD
 - HTTPS
 - CSRF protection
 - Secure session management
-- Input Sanitization: Recently implemented using the xss package.
+- Input Sanitization
 
 ## Prerequisites
 
