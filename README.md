@@ -35,6 +35,10 @@ This project is a full-stack e-commerce application built using the MERN (MongoD
 - HTTPS
 - CSRF protection
 - Secure session management
+- Input Sanitization
+- Rate Limiting
+- Secure Cookies
+- CORS
 
 ## Prerequisites
 
