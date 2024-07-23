@@ -78,3 +78,7 @@ logs
 
 # Yarn Integrity file
 .yarn-integrity
+
+# SSL self-signed certificate files
+*.key
+*.cert
