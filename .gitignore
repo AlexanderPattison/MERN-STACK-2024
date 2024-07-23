@@ -80,5 +80,5 @@ logs
 .yarn-integrity
 
 # SSL self-signed certificate files
-/.key
-/.cert
+serveer.key
+server.cert
