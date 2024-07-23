@@ -1,5 +1,3 @@
-// backend/server.js
-
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -10,12 +8,25 @@ const cookieParser = require('cookie-parser');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const sanitize = require('./middleware/sanitizeMiddleware');
 require('dotenv').config();
 
 const app = express();
 
 // Middleware
+app.use(helmet());
+
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        imgSrc: ["'self'", "data:", "https:"],
+    },
+}));
+
 app.use(cors({
     origin: process.env.NODE_ENV === 'production' ? 'https://yourdomain.com' : 'https://localhost:3000',
     credentials: true,
@@ -23,7 +34,14 @@ app.use(cors({
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(sanitize);  // Apply sanitization to all routes
+app.use(sanitize);
+
+// Rate limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
 // Session configuration
 app.use(session({
@@ -33,8 +51,8 @@ app.use(session({
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 1 day
-        secure: true, // Set to true for HTTPS
-        sameSite: 'none', // Required for cross-site cookie
+        secure: true,
+        sameSite: 'none',
         httpOnly: true,
     }
 }));

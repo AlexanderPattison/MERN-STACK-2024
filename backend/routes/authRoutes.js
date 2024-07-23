@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { isAuthenticated } = require('../middleware/authMiddleware');
+const { validateSignup, validateLogin } = require('../middleware/validateMiddleware');
 const rateLimit = require('express-rate-limit');
 
 // Create a limiter for authentication routes
@@ -12,8 +13,8 @@ const authLimiter = rateLimit({
 });
 
 // Apply the rate limiter to login and signup routes
-router.post('/signup', authLimiter, authController.signup);
-router.post('/login', authLimiter, authController.login);
+router.post('/signup', authLimiter, validateSignup, authController.signup);
+router.post('/login', authLimiter, validateLogin, authController.login);
 router.post('/logout', authController.logout);
 router.delete('/delete-account', isAuthenticated, authController.deleteAccount);
 router.get('/me', isAuthenticated, authController.getMe);

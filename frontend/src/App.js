@@ -1,6 +1,9 @@
+// App.js
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, useNavigate } from 'react-router-dom';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { useAuth } from './hooks/useAuth';
 import api from './utils/api';
 import Login from './components/Login';
 import Signup from './components/Signup';
@@ -13,8 +16,7 @@ import { ThemeContext } from './ThemeContext';
 import './App.css';
 
 function AppContent() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState(null);
+    const { isAuthenticated, user, isLoading, logout } = useAuth();
     const [wishlistCount, setWishlistCount] = useState(0);
     const [cartCount, setCartCount] = useState(0);
     const navigate = useNavigate();
@@ -35,19 +37,13 @@ function AppContent() {
     }, [isAuthenticated]);
 
     useEffect(() => {
-        const checkAuthStatus = async () => {
-            try {
-                const response = await api.get('/auth/me');
-                setIsAuthenticated(true);
-                setUser(response.data);
-                fetchCounts();
-            } catch (error) {
-                setIsAuthenticated(false);
-                setUser(null);
-            }
-        };
-        checkAuthStatus();
-    }, [fetchCounts]);
+        if (isAuthenticated) {
+            fetchCounts();
+        } else {
+            setWishlistCount(0);
+            setCartCount(0);
+        }
+    }, [isAuthenticated, fetchCounts]);
 
     useEffect(() => {
         document.body.classList.toggle('dark-mode', darkMode);
@@ -55,16 +51,16 @@ function AppContent() {
 
     const handleLogout = async () => {
         try {
-            await api.post('/auth/logout');
-            setIsAuthenticated(false);
-            setUser(null);
-            setWishlistCount(0);
-            setCartCount(0);
+            await logout();
             navigate('/');
         } catch (error) {
             console.error('Logout error:', error);
         }
     };
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
@@ -92,14 +88,14 @@ function AppContent() {
                 </div>
             </nav>
             <Routes>
-                <Route path="/" element={<HomePage fetchCounts={fetchCounts} />} />
-                <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} setUser={setUser} />} />
-                <Route path="/signup" element={<Signup setIsAuthenticated={setIsAuthenticated} setUser={setUser} />} />
+                <Route path="/" element={<HomePage fetchCounts={fetchCounts} isAuthenticated={isAuthenticated} />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
                 <Route
                     path="/dashboard"
                     element={
                         <PrivateRoute isAuthenticated={isAuthenticated}>
-                            <Dashboard setIsAuthenticated={setIsAuthenticated} setUser={setUser} />
+                            <Dashboard />
                         </PrivateRoute>
                     }
                 />

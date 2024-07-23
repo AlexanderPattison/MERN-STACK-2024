@@ -1,20 +1,9 @@
-// backend/controllers/authController.js
-
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-
-function validateEmail(email) {
-    const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    return re.test(email);
-}
 
 exports.signup = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        if (!validateEmail(email)) {
-            return res.status(400).json({ message: 'Invalid email format' });
-        }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {

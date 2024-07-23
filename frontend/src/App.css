@@ -342,23 +342,25 @@ button {
     align-items: center;
 }
 
-.quantity-control button {
-    background-color: #e0e0e0;
-    color: #333333;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 14px;
-    border-radius: 4px;
-}
-.quantity-control button:hover {
-    background-color: #d0d0d0;
-}
-.quantity-control button:disabled {
-    background-color: #f0f0f0;
-    color: #999999;
-    cursor: not-allowed;
-}
+    .quantity-control button {
+        background-color: #e0e0e0;
+        color: #333333;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 14px;
+        border-radius: 4px;
+    }
+
+        .quantity-control button:hover {
+            background-color: #d0d0d0;
+        }
+
+        .quantity-control button:disabled {
+            background-color: #f0f0f0;
+            color: #999999;
+            cursor: not-allowed;
+        }
 
 .remove-btn {
     background-color: #dc3545;
@@ -449,4 +451,30 @@ button {
 
     .checkout-btn:hover {
         background-color: #45a049;
+    }
+
+/* Password strength indicator */
+.password-strength {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+    .password-strength.very-weak {
+        color: #ff0000;
+    }
+
+    .password-strength.weak {
+        color: #ff6600;
+    }
+
+    .password-strength.medium {
+        color: #ffcc00;
+    }
+
+    .password-strength.strong {
+        color: #9acd32;
+    }
+
+    .password-strength.very-strong {
+        color: #008000;
     }

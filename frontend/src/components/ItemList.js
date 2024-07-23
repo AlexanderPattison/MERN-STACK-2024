@@ -1,4 +1,4 @@
-// frontend/src/components/ItemList.js
+// ItemList.js
 
 import React, { useState, useEffect, useContext } from 'react';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
@@ -6,7 +6,7 @@ import api from '../utils/api';
 import { ThemeContext } from '../ThemeContext';
 import SearchBar from './SearchBar';
 
-function ItemList({ fetchCounts }) {
+function ItemList({ fetchCounts, isAuthenticated }) {
     const [items, setItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -30,6 +30,12 @@ function ItemList({ fetchCounts }) {
     };
 
     const fetchWishlistAndCart = async () => {
+        if (!isAuthenticated) {
+            setWishlist([]);
+            setCart({});
+            return;
+        }
+
         try {
             const wishlistResponse = await api.get('/wishlist');
             setWishlist(wishlistResponse.data.map(item => item._id));
@@ -41,14 +47,20 @@ function ItemList({ fetchCounts }) {
             }, {});
             setCart(cartData);
         } catch (error) {
-            console.error('Error fetching wishlist and cart:', error);
+            if (error.response && error.response.status === 401) {
+                // User is not authenticated, clear wishlist and cart
+                setWishlist([]);
+                setCart({});
+            } else {
+                console.error('Error fetching wishlist and cart:', error);
+            }
         }
     };
 
     useEffect(() => {
         fetchItems();
         fetchWishlistAndCart();
-    }, []);
+    }, [isAuthenticated]);
 
     const handleSearch = (searchTerm) => {
         fetchItems(searchTerm);

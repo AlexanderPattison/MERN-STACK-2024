@@ -1,13 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
-import { useNavigate, Link } from 'react-router-dom';
+// Signup.js
 
-function Signup({ setIsAuthenticated, setUser }) {
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import api from '../utils/api';
+
+function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordStrength, setPasswordStrength] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const validateEmail = (email) => {
         const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -54,9 +58,10 @@ function Signup({ setIsAuthenticated, setUser }) {
             return;
         }
         try {
-            const response = await api.post('/auth/signup', { email, password });
-            setIsAuthenticated(true);
-            setUser(response.data.user);
+            // First, sign up the user
+            await api.post('/auth/signup', { email, password });
+            // Then, log them in
+            await login({ email, password });
             navigate('/dashboard');
         } catch (error) {
             if (error.response && error.response.status === 409) {

@@ -1,28 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import api from '../utils/api';
-import { useNavigate, Link } from 'react-router-dom';
+// Login.js
 
-function Login({ setIsAuthenticated, setUser }) {
+import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+
+function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-
-    useEffect(() => {
-        // Fetch CSRF token when component mounts
-        api.get('/csrf-token').catch(error => {
-            console.error('Error fetching CSRF token:', error);
-        });
-    }, []);
+    const { login } = useAuth();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         try {
-            const response = await api.post('/auth/login', { email, password });
-            setIsAuthenticated(true);
-            setUser(response.data.user);
+            await login({ email, password });
             navigate('/dashboard');
         } catch (error) {
+            console.error('Login failed:', error.message);
             setError(error.response?.data?.message || 'An error occurred during login');
         }
     };
