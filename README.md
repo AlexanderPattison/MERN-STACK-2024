@@ -1,44 +1,45 @@
-# MERN Stack E-Commerce Application
+# E-commerce Web Application
 
-This project is a full-stack e-commerce application built using the MERN (MongoDB, Express.js, React.js, Node.js) stack. It features user authentication, product browsing, wishlist functionality, and a shopping cart system.
+This is a full-stack e-commerce web application built with React for the frontend and Node.js/Express for the backend. It features user authentication, product browsing, wishlist functionality, and a shopping cart.
 
 ## Features
 
-- **User Authentication**: Sign up, log in, and log out functionality
-- **Product Browsing**: View and search for products
-- **Wishlist**: Add and remove items from a personal wishlist
-- **Shopping Cart**: Add items to cart, adjust quantities, and remove items
-- **Responsive Design**: Works on desktop and mobile devices
-- **Dark Mode**: Toggle between light and dark themes
+- User authentication (signup, login, logout)
+- Product browsing with search functionality
+- Wishlist management
+- Shopping cart
+- Dark mode toggle
+- Responsive design
 
 ## Tech Stack
-### Backend:
 
+### Frontend
+- React
+- React Router for navigation
+- Context API for state management
+- Axios for API requests
+- React Icons for UI icons
+- CSS for styling
+
+### Backend
 - Node.js
 - Express.js
-- MongoDB
-- Mongoose
+- MongoDB with Mongoose for database management
+- Express-session for session management
 - bcryptjs for password hashing
-- express-session for session management
-- connect-mongo for storing sessions in MongoDB
-- express-rate-limit for API rate limiting
-
-### Frontend:
-
-- React.js
-- React Router for navigation
-- Axios for API requests
-- React Icons
-
-### Security:
-
-- HTTPS
 - CSRF protection
+- Rate limiting
+- Input sanitization
+
+## Security Features
+
+- HTTPS server
+- Helmet for setting various HTTP headers
+- CSRF protection
+- Rate limiting to prevent brute-force attacks
+- Input sanitization to prevent XSS attacks
 - Secure session management
-- Input Sanitization
-- Rate Limiting
-- Secure Cookies
-- CORS
+- Password hashing
 
 ## Prerequisites
 
