@@ -1,86 +1,96 @@
+// backend/controllers/authController.js
+
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const { BadRequestError, UnauthorizedError, NotFoundError } = require('../utils/customErrors');
+const asyncHandler = require('../utils/asyncHandler');
 
-exports.signup = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+exports.signup = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
 
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
-        }
-        const user = new User({ email, password });
-        await user.save();
-        req.session.userId = user._id;
-        res.status(201).json({
-            message: 'Signup successful',
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        throw new BadRequestError('User already exists');
+    }
+
+    const user = new User({ email, password });
+    await user.save();
+
+    req.session.userId = user._id;
+    res.status(201).json({
+        status: 'success',
+        data: {
             user: { id: user._id, email: user.email }
+        }
+    });
+});
+
+exports.login = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select('+password');
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+        throw new UnauthorizedError('Incorrect email or password');
+    }
+
+    req.session.userId = user._id;
+    await new Promise((resolve, reject) => {
+        req.session.save((err) => {
+            if (err) reject(err);
+            else resolve();
         });
-    } catch (error) {
-        console.error('Signup error:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
+    });
 
-exports.login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({ message: 'Authentication failed' });
+    res.json({
+        status: 'success',
+        data: {
+            user: { id: user._id, email: user.email }
         }
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (isMatch) {
-            req.session.userId = user._id;
-            res.json({
-                message: 'Authentication successful',
-                user: { id: user._id, email: user.email }
-            });
-        } else {
-            res.status(400).json({ message: 'Authentication failed' });
-        }
-    } catch (error) {
-        console.error('Login error:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
+    });
+});
 
-exports.logout = (req, res) => {
+exports.checkAuth = asyncHandler(async (req, res) => {
+    if (req.session && req.session.userId) {
+        res.json({ isAuthenticated: true });
+    } else {
+        res.json({ isAuthenticated: false });
+    }
+});
+
+exports.logout = asyncHandler(async (req, res) => {
     req.session.destroy((err) => {
         if (err) {
-            return res.status(500).json({ message: 'Internal server error' });
+            console.error('Session destruction error:', err);
+            throw new Error('Could not log out, please try again');
+        }
+        res.clearCookie('connect.sid'); // Clear the session cookie
+        res.json({ status: 'success', message: 'Logged out successfully' });
+    });
+});
+
+exports.getMe = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.session.userId).select('-password');
+    if (!user) {
+        throw new NotFoundError('User not found');
+    }
+    res.json({
+        status: 'success',
+        data: { user }
+    });
+});
+
+exports.deleteAccount = asyncHandler(async (req, res) => {
+    const user = await User.findByIdAndDelete(req.session.userId);
+    if (!user) {
+        throw new NotFoundError('User not found');
+    }
+
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error deleting session:', err);
+            throw new Error('Could not complete account deletion, please try again');
         }
         res.clearCookie('connect.sid');
-        res.json({ message: 'Logout successful' });
+        res.json({ status: 'success', message: 'Account deleted successfully' });
     });
-};
-
-exports.deleteAccount = async (req, res) => {
-    try {
-        const user = await User.findByIdAndDelete(req.session.userId);
-        if (!user) {
-            return res.status(404).json({ message: 'Not found' });
-        }
-        req.session.destroy((err) => {
-            if (err) {
-                return res.status(500).json({ message: 'Internal server error' });
-            }
-            res.clearCookie('connect.sid');
-            res.json({ message: 'Account deleted' });
-        });
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
-
-exports.getMe = async (req, res) => {
-    try {
-        const user = await User.findById(req.session.userId).select('-password');
-        if (!user) {
-            return res.status(404).json({ message: 'Not found' });
-        }
-        res.json(user);
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-};
+});

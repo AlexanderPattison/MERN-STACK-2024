@@ -1,9 +1,9 @@
-// ItemList.js
-
-import React, { useState, useEffect, useContext } from 'react';
+// frontend/src/components/ItemList.js
+import React, { useState, useEffect, useContext, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import api from '../utils/api';
-import { ThemeContext } from '../ThemeContext';
+import { ThemeContext } from '../contexts/ThemeContext';
 import SearchBar from './SearchBar';
 
 function ItemList({ fetchCounts, isAuthenticated }) {
@@ -15,21 +15,22 @@ function ItemList({ fetchCounts, isAuthenticated }) {
     const [cart, setCart] = useState({});
     const { darkMode } = useContext(ThemeContext);
 
-    const fetchItems = async (searchTerm = '') => {
+    const fetchItems = useCallback(async (searchTerm = '') => {
         setIsLoading(true);
         try {
             const response = await api.get(`/items?search=${searchTerm}`);
             setItems(response.data);
-            setIsLoading(false);
             setCurrentSearchTerm(searchTerm);
+            setError(null);
         } catch (error) {
             console.error('Error fetching items:', error);
             setError('Failed to fetch items. Please try again later.');
+        } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
-    const fetchWishlistAndCart = async () => {
+    const fetchWishlistAndCart = useCallback(async () => {
         if (!isAuthenticated) {
             setWishlist([]);
             setCart({});
@@ -37,30 +38,28 @@ function ItemList({ fetchCounts, isAuthenticated }) {
         }
 
         try {
-            const wishlistResponse = await api.get('/wishlist');
+            const [wishlistResponse, cartResponse] = await Promise.all([
+                api.get('/wishlist'),
+                api.get('/cart')
+            ]);
+
             setWishlist(wishlistResponse.data.map(item => item._id));
 
-            const cartResponse = await api.get('/cart');
             const cartData = cartResponse.data.reduce((acc, item) => {
                 acc[item.item._id] = item.quantity;
                 return acc;
             }, {});
             setCart(cartData);
         } catch (error) {
-            if (error.response && error.response.status === 401) {
-                // User is not authenticated, clear wishlist and cart
-                setWishlist([]);
-                setCart({});
-            } else {
-                console.error('Error fetching wishlist and cart:', error);
-            }
+            console.error('Error fetching wishlist and cart:', error);
+            // Handle error appropriately, maybe set an error state
         }
-    };
+    }, [isAuthenticated]);
 
     useEffect(() => {
         fetchItems();
         fetchWishlistAndCart();
-    }, [isAuthenticated]);
+    }, [fetchItems, fetchWishlistAndCart, isAuthenticated]);
 
     const handleSearch = (searchTerm) => {
         fetchItems(searchTerm);
@@ -102,8 +101,8 @@ function ItemList({ fetchCounts, isAuthenticated }) {
         }
     };
 
-    if (isLoading) return <div>Loading items...</div>;
-    if (error) return <div>{error}</div>;
+    if (isLoading) return <div aria-live="polite">Loading items...</div>;
+    if (error) return <div aria-live="assertive">{error}</div>;
 
     return (
         <div className={`item-list ${darkMode ? 'dark-mode' : ''}`}>
@@ -115,10 +114,10 @@ function ItemList({ fetchCounts, isAuthenticated }) {
                     <button onClick={() => handleSearch('')} className="clear-search">Clear search</button>
                 </p>
             )}
-            <div className="items-grid">
+            <div className="items-grid" role="list">
                 {items.length > 0 ? (
                     items.map((item) => (
-                        <div key={item._id} className="item-card">
+                        <div key={item._id} className="item-card" role="listitem">
                             <img src={item.imageUrl} alt={item.name} />
                             <h3>{item.name}</h3>
                             <p>{item.description}</p>
@@ -127,20 +126,27 @@ function ItemList({ fetchCounts, isAuthenticated }) {
                                 <button
                                     onClick={() => wishlist.includes(item._id) ? removeFromWishlist(item._id) : addToWishlist(item._id)}
                                     className={`wishlist-btn ${wishlist.includes(item._id) ? 'active' : ''}`}
+                                    aria-label={wishlist.includes(item._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                                 >
                                     <FaHeart /> {wishlist.includes(item._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                                 </button>
                                 <div className="cart-action">
+                                    <label htmlFor={`quantity-${item._id}`} className="visually-hidden">Quantity</label>
                                     <input
+                                        id={`quantity-${item._id}`}
                                         type="number"
                                         min="1"
                                         defaultValue="1"
                                         className="quantity-input"
                                     />
-                                    <button onClick={(e) => {
-                                        const quantity = parseInt(e.target.previousSibling.value);
-                                        addToCart(item._id, quantity);
-                                    }} className="cart-btn">
+                                    <button
+                                        onClick={(e) => {
+                                            const quantity = parseInt(e.target.previousSibling.value);
+                                            addToCart(item._id, quantity);
+                                        }}
+                                        className="cart-btn"
+                                        aria-label={`Add ${item.name} to Cart`}
+                                    >
                                         <FaShoppingCart /> Add to Cart
                                     </button>
                                 </div>
@@ -155,5 +161,10 @@ function ItemList({ fetchCounts, isAuthenticated }) {
         </div>
     );
 }
+
+ItemList.propTypes = {
+    fetchCounts: PropTypes.func,
+    isAuthenticated: PropTypes.bool.isRequired
+};
 
 export default ItemList;

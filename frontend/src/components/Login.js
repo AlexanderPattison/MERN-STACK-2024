@@ -1,31 +1,38 @@
-// Login.js
-
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, isAuthenticated } = useContext(AuthContext);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
         try {
-            await login({ email, password });
-            navigate('/dashboard');
-        } catch (error) {
-            console.error('Login failed:', error.message);
-            setError(error.response?.data?.message || 'An error occurred during login');
+            const success = await login({ email, password });
+            if (success) {
+                navigate('/');
+            } else {
+                setError('Login failed. Please check your credentials and try again.');
+            }
+        } catch (err) {
+            setError('An error occurred during login. Please try again.');
         }
     };
+
+    if (isAuthenticated) {
+        navigate('/');
+        return null;
+    }
 
     return (
         <div className="content-card auth">
             <h2>Login</h2>
+            {error && <p className="error">{error}</p>}
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -43,8 +50,6 @@ function Login() {
                 />
                 <button type="submit">Login</button>
             </form>
-            {error && <p className="error-message">{error}</p>}
-            <p>Don't have an account? <Link to="/signup">Sign up</Link></p>
         </div>
     );
 }
