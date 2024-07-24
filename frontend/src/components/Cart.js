@@ -1,13 +1,13 @@
-// frontend/src/components/Cart.js
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import api from '../utils/api';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 function Cart({ fetchCounts }) {
     const [cartItems, setCartItems] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { darkMode } = useContext(ThemeContext);
 
     useEffect(() => {
         fetchCart();
@@ -57,7 +57,7 @@ function Cart({ fetchCounts }) {
     if (error) return <div>{error}</div>;
 
     return (
-        <div className="cart">
+        <div className={`cart ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Your Cart</h2>
             {cartItems.length > 0 ? (
                 <>

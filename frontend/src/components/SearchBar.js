@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 function SearchBar({ onSearch, initialSearchTerm = '' }) {
     const [searchTerm, setSearchTerm] = useState(initialSearchTerm);
+    const { darkMode } = useContext(ThemeContext);
 
     useEffect(() => {
         setSearchTerm(initialSearchTerm);
@@ -13,7 +15,7 @@ function SearchBar({ onSearch, initialSearchTerm = '' }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="search-bar">
+        <form onSubmit={handleSubmit} className={`search-bar ${darkMode ? 'dark-mode' : ''}`}>
             <input
                 type="text"
                 placeholder="Search items..."

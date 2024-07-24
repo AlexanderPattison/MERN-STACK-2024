@@ -453,7 +453,6 @@ button {
         background-color: #45a049;
     }
 
-/* Password strength indicator */
 .password-strength {
     font-size: 14px;
     margin-top: 5px;
@@ -478,3 +477,21 @@ button {
     .password-strength.very-strong {
         color: #008000;
     }
+
+.App.dark-mode .wishlist-btn {
+    background-color: #d4317c;
+}
+
+    .App.dark-mode .wishlist-btn.active {
+        background-color: #ff1493;
+    }
+
+.App.dark-mode .cart-btn {
+    background-color: #45a049;
+}
+
+.App.dark-mode .quantity-input {
+    background-color: #3a3b3c;
+    color: #e4e6eb;
+    border-color: #393a3b;
+}

@@ -1,9 +1,8 @@
-// Signup.js
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import api from '../utils/api';
+import { ThemeContext } from '../contexts/ThemeContext';
 
 function Signup() {
     const [email, setEmail] = useState('');
@@ -12,6 +11,7 @@ function Signup() {
     const [error, setError] = useState('');
     const navigate = useNavigate();
     const { login } = useAuth();
+    const { darkMode } = useContext(ThemeContext);
 
     const validateEmail = (email) => {
         const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -58,9 +58,7 @@ function Signup() {
             return;
         }
         try {
-            // First, sign up the user
             await api.post('/auth/signup', { email, password });
-            // Then, log them in
             await login({ email, password });
             navigate('/dashboard');
         } catch (error) {
@@ -73,7 +71,7 @@ function Signup() {
     };
 
     return (
-        <div className="content-card auth">
+        <div className={`content-card auth ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Sign Up</h2>
             <form onSubmit={handleSubmit}>
                 <input
