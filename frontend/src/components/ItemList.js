@@ -1,6 +1,8 @@
+// src/components/ItemList.js
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { FaHeart, FaShoppingCart } from 'react-icons/fa';
+import { FaHeart, FaShoppingCart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import SearchBar from './SearchBar';
 import ErrorMessage from './ErrorMessage';
@@ -12,18 +14,23 @@ function ItemList({ fetchCounts, isAuthenticated }) {
     const [currentSearchTerm, setCurrentSearchTerm] = useState('');
     const [wishlist, setWishlist] = useState([]);
     const [cart, setCart] = useState({});
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [itemsPerPage] = useState(10);
     const { darkMode } = useContext(ThemeContext);
     const { isLoading, error, get, post, delete: deleteRequest } = useAPI();
 
-    const fetchItems = useCallback(async (searchTerm = '') => {
+    const fetchItems = useCallback(async (searchTerm = '', page = 1) => {
         try {
-            const response = await get(`/items?search=${searchTerm}`);
-            setItems(response);
+            const response = await get(`/items?search=${searchTerm}&page=${page}&limit=${itemsPerPage}`);
+            setItems(response.items);
+            setTotalPages(response.totalPages);
+            setCurrentPage(Number(response.currentPage));
             setCurrentSearchTerm(searchTerm);
         } catch (error) {
             console.error('Error fetching items:', error);
         }
-    }, [get]);
+    }, [get, itemsPerPage]);
 
     const fetchWishlistAndCart = useCallback(async () => {
         if (!isAuthenticated) {
@@ -51,12 +58,13 @@ function ItemList({ fetchCounts, isAuthenticated }) {
     }, [get, isAuthenticated]);
 
     useEffect(() => {
-        fetchItems();
+        fetchItems(currentSearchTerm, currentPage);
         fetchWishlistAndCart();
-    }, [fetchItems, fetchWishlistAndCart, isAuthenticated]);
+    }, [fetchItems, fetchWishlistAndCart, isAuthenticated, currentPage, currentSearchTerm]);
 
     const handleSearch = (searchTerm) => {
-        fetchItems(searchTerm);
+        setCurrentPage(1);
+        fetchItems(searchTerm, 1);
     };
 
     const addToWishlist = async (itemId) => {
@@ -89,6 +97,12 @@ function ItemList({ fetchCounts, isAuthenticated }) {
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error adding to cart:', error);
+        }
+    };
+
+    const handlePageChange = (newPage) => {
+        if (newPage >= 1 && newPage <= totalPages) {
+            setCurrentPage(newPage);
         }
     };
 
@@ -148,6 +162,25 @@ function ItemList({ fetchCounts, isAuthenticated }) {
                 ) : (
                     <p>No items found. Try a different search term.</p>
                 )}
+            </div>
+            <div className="pagination">
+                <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="pagination-btn"
+                    aria-label="Previous page"
+                >
+                    <FaChevronLeft />
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="pagination-btn"
+                    aria-label="Next page"
+                >
+                    <FaChevronRight />
+                </button>
             </div>
         </div>
     );
