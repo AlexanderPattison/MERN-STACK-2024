@@ -1,15 +1,19 @@
+// src/components/Login.js
+
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { ThemeContext } from '../contexts/ThemeContext';
+import ErrorMessage from './ErrorMessage';
+import useApi from '../hooks/useApi';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
     const { login, isAuthenticated } = useContext(AuthContext);
     const { darkMode } = useContext(ThemeContext);
+    const { isLoading, error, setError } = useApi();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -34,7 +38,7 @@ function Login() {
     return (
         <div className={`content-card auth ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Login</h2>
-            {error && <p className="error">{error}</p>}
+            <ErrorMessage message={error} />
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -50,7 +54,9 @@ function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Login</button>
+                <button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Logging in...' : 'Login'}
+                </button>
             </form>
         </div>
     );

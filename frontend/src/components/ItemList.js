@@ -1,34 +1,31 @@
-// frontend/src/components/ItemList.js
+// src/components/ItemList.js
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
 import api from '../utils/api';
 import { ThemeContext } from '../contexts/ThemeContext';
 import SearchBar from './SearchBar';
+import ErrorMessage from './ErrorMessage';
+import useApi from '../hooks/useApi';
 
 function ItemList({ fetchCounts, isAuthenticated }) {
     const [items, setItems] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const [currentSearchTerm, setCurrentSearchTerm] = useState('');
     const [wishlist, setWishlist] = useState([]);
     const [cart, setCart] = useState({});
     const { darkMode } = useContext(ThemeContext);
+    const { isLoading, error, get, post, delete: deleteRequest } = useApi();
 
     const fetchItems = useCallback(async (searchTerm = '') => {
-        setIsLoading(true);
         try {
-            const response = await api.get(`/items?search=${searchTerm}`);
-            setItems(response.data);
+            const response = await get(`/items?search=${searchTerm}`);
+            setItems(response);
             setCurrentSearchTerm(searchTerm);
-            setError(null);
         } catch (error) {
             console.error('Error fetching items:', error);
-            setError('Failed to fetch items. Please try again later.');
-        } finally {
-            setIsLoading(false);
         }
-    }, []);
+    }, [get]);
 
     const fetchWishlistAndCart = useCallback(async () => {
         if (!isAuthenticated) {
@@ -39,22 +36,21 @@ function ItemList({ fetchCounts, isAuthenticated }) {
 
         try {
             const [wishlistResponse, cartResponse] = await Promise.all([
-                api.get('/wishlist'),
-                api.get('/cart')
+                get('/wishlist'),
+                get('/cart')
             ]);
 
-            setWishlist(wishlistResponse.data.map(item => item._id));
+            setWishlist(wishlistResponse.map(item => item._id));
 
-            const cartData = cartResponse.data.reduce((acc, item) => {
+            const cartData = cartResponse.reduce((acc, item) => {
                 acc[item.item._id] = item.quantity;
                 return acc;
             }, {});
             setCart(cartData);
         } catch (error) {
             console.error('Error fetching wishlist and cart:', error);
-            // Handle error appropriately, maybe set an error state
         }
-    }, [isAuthenticated]);
+    }, [get, isAuthenticated]);
 
     useEffect(() => {
         fetchItems();
@@ -67,29 +63,27 @@ function ItemList({ fetchCounts, isAuthenticated }) {
 
     const addToWishlist = async (itemId) => {
         try {
-            await api.post('/wishlist/add', { itemId });
+            await post('/wishlist/add', { itemId });
             setWishlist([...wishlist, itemId]);
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error adding to wishlist:', error);
-            alert('Failed to add item to wishlist');
         }
     };
 
     const removeFromWishlist = async (itemId) => {
         try {
-            await api.delete(`/wishlist/${itemId}`);
+            await deleteRequest(`/wishlist/${itemId}`);
             setWishlist(wishlist.filter(id => id !== itemId));
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error removing from wishlist:', error);
-            alert('Failed to remove item from wishlist');
         }
     };
 
     const addToCart = async (itemId, quantity = 1) => {
         try {
-            await api.post('/cart/add', { itemId, quantity });
+            await post('/cart/add', { itemId, quantity });
             setCart(prevCart => ({
                 ...prevCart,
                 [itemId]: (prevCart[itemId] || 0) + quantity
@@ -97,17 +91,16 @@ function ItemList({ fetchCounts, isAuthenticated }) {
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error adding to cart:', error);
-            alert('Failed to add item to cart');
         }
     };
 
     if (isLoading) return <div aria-live="polite">Loading items...</div>;
-    if (error) return <div aria-live="assertive">{error}</div>;
 
     return (
         <div className={`item-list ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Items for Sale</h2>
             <SearchBar onSearch={handleSearch} initialSearchTerm={currentSearchTerm} />
+            <ErrorMessage message={error} />
             {currentSearchTerm && (
                 <p className="search-info">
                     Showing results for: "{currentSearchTerm}"

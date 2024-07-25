@@ -1,13 +1,15 @@
+// src/components/Cart.js
+
 import React, { useState, useEffect, useContext } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
-import api from '../utils/api';
 import { ThemeContext } from '../contexts/ThemeContext';
+import ErrorMessage from './ErrorMessage';
+import useApi from '../hooks/useApi';
 
 function Cart({ fetchCounts }) {
     const [cartItems, setCartItems] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
     const { darkMode } = useContext(ThemeContext);
+    const { isLoading, error, get, put, delete: deleteRequest } = useApi();
 
     useEffect(() => {
         fetchCart();
@@ -15,37 +17,32 @@ function Cart({ fetchCounts }) {
 
     const fetchCart = async () => {
         try {
-            const response = await api.get('/cart');
-            setCartItems(response.data);
-            setIsLoading(false);
+            const response = await get('/cart');
+            setCartItems(response);
         } catch (error) {
             console.error('Error fetching cart:', error);
-            setError('Failed to fetch cart. Please try again later.');
-            setIsLoading(false);
         }
     };
 
     const updateQuantity = async (itemId, newQuantity) => {
         try {
-            await api.put(`/cart/${itemId}`, { quantity: newQuantity });
+            await put(`/cart/${itemId}`, { quantity: newQuantity });
             setCartItems(cartItems.map(item =>
                 item.item._id === itemId ? { ...item, quantity: newQuantity } : item
             ));
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error updating quantity:', error);
-            alert('Failed to update quantity');
         }
     };
 
     const removeFromCart = async (itemId) => {
         try {
-            await api.delete(`/cart/${itemId}`);
+            await deleteRequest(`/cart/${itemId}`);
             setCartItems(cartItems.filter(item => item.item._id !== itemId));
             if (fetchCounts) fetchCounts();
         } catch (error) {
             console.error('Error removing from cart:', error);
-            alert('Failed to remove item from cart');
         }
     };
 
@@ -54,11 +51,11 @@ function Cart({ fetchCounts }) {
     };
 
     if (isLoading) return <div>Loading cart...</div>;
-    if (error) return <div>{error}</div>;
 
     return (
         <div className={`cart ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Your Cart</h2>
+            <ErrorMessage message={error} />
             {cartItems.length > 0 ? (
                 <>
                     <ul className="cart-items">

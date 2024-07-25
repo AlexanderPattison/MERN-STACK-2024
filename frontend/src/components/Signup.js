@@ -1,17 +1,20 @@
+// src/components/Signup.js
+
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import api from '../utils/api';
 import { ThemeContext } from '../contexts/ThemeContext';
+import ErrorMessage from './ErrorMessage';
+import useApi from '../hooks/useApi';
 
 function Signup() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordStrength, setPasswordStrength] = useState('');
-    const [error, setError] = useState('');
     const navigate = useNavigate();
     const { login } = useAuth();
     const { darkMode } = useContext(ThemeContext);
+    const { isLoading, error, setError, post } = useApi();
 
     const validateEmail = (email) => {
         const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -49,6 +52,7 @@ function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
         if (!validateEmail(email)) {
             setError('Please enter a valid email address');
             return;
@@ -58,14 +62,14 @@ function Signup() {
             return;
         }
         try {
-            await api.post('/auth/signup', { email, password });
+            await post('/auth/signup', { email, password });
             await login({ email, password });
             navigate('/dashboard');
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 setError('This email is already registered. Please use a different email or try logging in.');
             } else {
-                setError(error.response?.data?.message || 'An error occurred during signup');
+                setError('An error occurred during signup. Please try again.');
             }
         }
     };
@@ -73,6 +77,7 @@ function Signup() {
     return (
         <div className={`content-card auth ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Sign Up</h2>
+            <ErrorMessage message={error} />
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"
@@ -91,9 +96,10 @@ function Signup() {
                 {password && <div className={`password-strength ${passwordStrength.toLowerCase().replace(' ', '-')}`}>
                     Password Strength: {passwordStrength}
                 </div>}
-                <button type="submit">Sign Up</button>
+                <button type="submit" disabled={isLoading}>
+                    {isLoading ? 'Signing up...' : 'Sign Up'}
+                </button>
             </form>
-            {error && <p className="error-message">{error}</p>}
             <p>Already have an account? <Link to="/login">Login</Link></p>
         </div>
     );
