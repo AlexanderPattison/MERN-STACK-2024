@@ -10,6 +10,7 @@ This is a full-stack e-commerce web application built with React for the fronten
 - Shopping cart
 - Dark mode toggle
 - Responsive design
+- Account deletion
 
 ## Tech Stack
 
@@ -40,12 +41,12 @@ This is a full-stack e-commerce web application built with React for the fronten
 - Input sanitization to prevent XSS attacks
 - Secure session management
 - Password hashing
+- Joi for input validation
 
 ## Prerequisites
 
 - Node.js (v14 or later recommended)
 - MongoDB
-
 ### Installation
 
 1. Clone the repository:
