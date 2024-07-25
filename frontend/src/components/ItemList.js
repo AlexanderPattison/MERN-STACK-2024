@@ -1,13 +1,11 @@
-// src/components/ItemList.js
-
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FaHeart, FaShoppingCart } from 'react-icons/fa';
-import api from '../utils/api';
 import { ThemeContext } from '../contexts/ThemeContext';
 import SearchBar from './SearchBar';
 import ErrorMessage from './ErrorMessage';
-import useApi from '../hooks/useApi';
+import LoadingSpinner from './LoadingSpinner';
+import useAPI from '../hooks/useApi';
 
 function ItemList({ fetchCounts, isAuthenticated }) {
     const [items, setItems] = useState([]);
@@ -15,7 +13,7 @@ function ItemList({ fetchCounts, isAuthenticated }) {
     const [wishlist, setWishlist] = useState([]);
     const [cart, setCart] = useState({});
     const { darkMode } = useContext(ThemeContext);
-    const { isLoading, error, get, post, delete: deleteRequest } = useApi();
+    const { isLoading, error, get, post, delete: deleteRequest } = useAPI();
 
     const fetchItems = useCallback(async (searchTerm = '') => {
         try {
@@ -94,13 +92,13 @@ function ItemList({ fetchCounts, isAuthenticated }) {
         }
     };
 
-    if (isLoading) return <div aria-live="polite">Loading items...</div>;
+    if (isLoading) return <LoadingSpinner />;
 
     return (
         <div className={`item-list ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Items for Sale</h2>
             <SearchBar onSearch={handleSearch} initialSearchTerm={currentSearchTerm} />
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error?.message} />
             {currentSearchTerm && (
                 <p className="search-info">
                     Showing results for: "{currentSearchTerm}"

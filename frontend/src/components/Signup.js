@@ -1,11 +1,10 @@
-// src/components/Signup.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
-import useApi from '../hooks/useApi';
+import LoadingSpinner from './LoadingSpinner';
+import useAPI from '../hooks/useApi';
 
 function Signup() {
     const [email, setEmail] = useState('');
@@ -14,7 +13,7 @@ function Signup() {
     const navigate = useNavigate();
     const { login } = useAuth();
     const { darkMode } = useContext(ThemeContext);
-    const { isLoading, error, setError, post } = useApi();
+    const { isLoading, error, setError, post } = useAPI();
 
     const validateEmail = (email) => {
         const re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -74,10 +73,12 @@ function Signup() {
         }
     };
 
+    if (isLoading) return <LoadingSpinner />;
+
     return (
         <div className={`content-card auth ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Sign Up</h2>
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error?.message} />
             <form onSubmit={handleSubmit}>
                 <input
                     type="email"

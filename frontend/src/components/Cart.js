@@ -1,15 +1,14 @@
-// src/components/Cart.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
-import useApi from '../hooks/useApi';
+import LoadingSpinner from './LoadingSpinner';
+import useAPI from '../hooks/useApi';
 
 function Cart({ fetchCounts }) {
     const [cartItems, setCartItems] = useState([]);
     const { darkMode } = useContext(ThemeContext);
-    const { isLoading, error, get, put, delete: deleteRequest } = useApi();
+    const { isLoading, error, get, put, delete: deleteRequest } = useAPI();
 
     useEffect(() => {
         fetchCart();
@@ -50,12 +49,12 @@ function Cart({ fetchCounts }) {
         return cartItems.reduce((total, item) => total + item.item.price * item.quantity, 0).toFixed(2);
     };
 
-    if (isLoading) return <div>Loading cart...</div>;
+    if (isLoading) return <LoadingSpinner />;
 
     return (
         <div className={`cart ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Your Cart</h2>
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error?.message} />
             {cartItems.length > 0 ? (
                 <>
                     <ul className="cart-items">

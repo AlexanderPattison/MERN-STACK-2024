@@ -1,15 +1,14 @@
-// src/components/Wishlist.js
-
 import React, { useState, useEffect, useContext } from 'react';
 import { FaTrash, FaShoppingCart } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
-import useApi from '../hooks/useApi';
+import LoadingSpinner from './LoadingSpinner';
+import useAPI from '../hooks/useApi';
 
 function Wishlist({ fetchCounts }) {
     const [wishlistItems, setWishlistItems] = useState([]);
     const { darkMode } = useContext(ThemeContext);
-    const { isLoading, error, get, post, delete: deleteRequest } = useApi();
+    const { isLoading, error, get, post, delete: deleteRequest } = useAPI();
 
     useEffect(() => {
         fetchWishlist();
@@ -43,12 +42,12 @@ function Wishlist({ fetchCounts }) {
         }
     };
 
-    if (isLoading) return <div>Loading wishlist...</div>;
+    if (isLoading) return <LoadingSpinner />;
 
     return (
         <div className={`wishlist ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Your Wishlist</h2>
-            <ErrorMessage message={error} />
+            <ErrorMessage message={error?.message} />
             {wishlistItems.length > 0 ? (
                 <ul className="wishlist-items">
                     {wishlistItems.map(item => (

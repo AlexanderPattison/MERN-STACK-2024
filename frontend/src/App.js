@@ -1,4 +1,3 @@
-// frontend/src/App.js
 import React, { useContext } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link, Navigate } from 'react-router-dom';
 import { AuthProvider, AuthContext } from './contexts/AuthContext';
@@ -25,35 +24,35 @@ function AppContent() {
 
     return (
         <Router>
-            <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
-                <nav>
-                    <Link to="/">Home</Link>
-                    <div className="nav-links">
-                        {isAuthenticated ? (
-                            <>
-                                <span>Hello {user?.email}!</span>
-                                <Link to="/dashboard">Dashboard</Link>
-                                <Link to="/wishlist" className="icon-link">
-                                    <FaHeart />
-                                </Link>
-                                <Link to="/cart" className="icon-link">
-                                    <FaShoppingCart />
-                                </Link>
-                                <button onClick={logout}>Logout</button>
-                            </>
-                        ) : (
-                            <>
-                                <Link to="/login">Login</Link>
-                                <Link to="/signup">Signup</Link>
-                            </>
-                        )}
-                        <button onClick={toggleDarkMode} className="theme-toggle">
-                            {darkMode ? 'Light Mode' : 'Dark Mode'}
-                        </button>
-                    </div>
-                </nav>
+            <ErrorBoundary>
+                <div className={`App ${darkMode ? 'dark-mode' : ''}`}>
+                    <nav>
+                        <Link to="/">Home</Link>
+                        <div className="nav-links">
+                            {isAuthenticated ? (
+                                <>
+                                    <span>Hello {user?.email}!</span>
+                                    <Link to="/dashboard">Dashboard</Link>
+                                    <Link to="/wishlist" className="icon-link">
+                                        <FaHeart />
+                                    </Link>
+                                    <Link to="/cart" className="icon-link">
+                                        <FaShoppingCart />
+                                    </Link>
+                                    <button onClick={logout}>Logout</button>
+                                </>
+                            ) : (
+                                <>
+                                    <Link to="/login">Login</Link>
+                                    <Link to="/signup">Signup</Link>
+                                </>
+                            )}
+                            <button onClick={toggleDarkMode} className="theme-toggle">
+                                {darkMode ? 'Light Mode' : 'Dark Mode'}
+                            </button>
+                        </div>
+                    </nav>
 
-                <ErrorBoundary>
                     <Routes>
                         <Route path="/" element={<HomePage />} />
                         <Route
@@ -77,8 +76,8 @@ function AppContent() {
                             element={isAuthenticated ? <Cart /> : <Navigate to="/login" />}
                         />
                     </Routes>
-                </ErrorBoundary>
-            </div>
+                </div>
+            </ErrorBoundary>
         </Router>
     );
 }
