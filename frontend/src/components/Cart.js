@@ -24,12 +24,15 @@ function Cart({ fetchCounts }) {
     };
 
     const updateQuantity = async (itemId, newQuantity) => {
+        if (newQuantity < 1) return; // Prevent decreasing below 1
         try {
-            await put(`/cart/${itemId}`, { quantity: newQuantity });
-            setCartItems(cartItems.map(item =>
-                item.item._id === itemId ? { ...item, quantity: newQuantity } : item
-            ));
-            if (fetchCounts) fetchCounts();
+            const response = await put(`/cart/update/${itemId}`, { quantity: newQuantity });
+            if (response.success) {
+                setCartItems(cartItems.map(item =>
+                    item.item._id === itemId ? { ...item, quantity: newQuantity } : item
+                ));
+                if (fetchCounts) fetchCounts();
+            }
         } catch (error) {
             console.error('Error updating quantity:', error);
         }
@@ -67,7 +70,10 @@ function Cart({ fetchCounts }) {
                                     <p>Price: ${cartItem.item.price.toFixed(2)}</p>
                                 </div>
                                 <div className="quantity-control">
-                                    <button onClick={() => updateQuantity(cartItem.item._id, cartItem.quantity - 1)} disabled={cartItem.quantity <= 1}>
+                                    <button
+                                        onClick={() => updateQuantity(cartItem.item._id, cartItem.quantity - 1)}
+                                        disabled={cartItem.quantity <= 1}
+                                    >
                                         <FaMinus />
                                     </button>
                                     <span>{cartItem.quantity}</span>

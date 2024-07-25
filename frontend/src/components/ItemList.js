@@ -1,6 +1,4 @@
-// src/components/ItemList.js
-
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FaHeart, FaShoppingCart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -19,6 +17,7 @@ function ItemList({ fetchCounts, isAuthenticated }) {
     const [itemsPerPage] = useState(10);
     const { darkMode } = useContext(ThemeContext);
     const { isLoading, error, get, post, delete: deleteRequest } = useAPI();
+    const quantityInputRefs = useRef({});
 
     const fetchItems = useCallback(async (searchTerm = '', page = 1) => {
         try {
@@ -106,6 +105,20 @@ function ItemList({ fetchCounts, isAuthenticated }) {
         }
     };
 
+    const handleAddToCart = (itemId) => {
+        const inputElement = quantityInputRefs.current[itemId];
+        if (inputElement) {
+            const quantity = parseInt(inputElement.value);
+            if (quantity > 0) {
+                addToCart(itemId, quantity);
+            } else {
+                alert("Please enter a quantity greater than 0");
+            }
+        } else {
+            console.error('Quantity input element not found');
+        }
+    };
+
     if (isLoading) return <LoadingSpinner />;
 
     return (
@@ -130,29 +143,26 @@ function ItemList({ fetchCounts, isAuthenticated }) {
                             <div className="item-actions">
                                 <button
                                     onClick={() => wishlist.includes(item._id) ? removeFromWishlist(item._id) : addToWishlist(item._id)}
-                                    className={`wishlist-btn ${wishlist.includes(item._id) ? 'active' : ''}`}
+                                    className={`icon-btn wishlist-btn ${wishlist.includes(item._id) ? 'active' : ''}`}
                                     aria-label={wishlist.includes(item._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
                                 >
-                                    <FaHeart /> {wishlist.includes(item._id) ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                    <FaHeart />
                                 </button>
                                 <div className="cart-action">
-                                    <label htmlFor={`quantity-${item._id}`} className="visually-hidden">Quantity</label>
                                     <input
-                                        id={`quantity-${item._id}`}
+                                        ref={el => quantityInputRefs.current[item._id] = el}
                                         type="number"
                                         min="1"
                                         defaultValue="1"
                                         className="quantity-input"
+                                        aria-label={`Quantity for ${item.name}`}
                                     />
                                     <button
-                                        onClick={(e) => {
-                                            const quantity = parseInt(e.target.previousSibling.value);
-                                            addToCart(item._id, quantity);
-                                        }}
-                                        className="cart-btn"
+                                        onClick={() => handleAddToCart(item._id)}
+                                        className="icon-btn cart-btn"
                                         aria-label={`Add ${item.name} to Cart`}
                                     >
-                                        <FaShoppingCart /> Add to Cart
+                                        <FaShoppingCart />
                                     </button>
                                 </div>
                                 {cart[item._id] > 0 && <p>In cart: {cart[item._id]}</p>}
