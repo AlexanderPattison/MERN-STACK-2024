@@ -5,14 +5,14 @@ This is a full-stack e-commerce web application built with React for the fronten
 ## Features
 
 - User authentication (signup, login, logout)
-- Product browsing with search functionality
+- Product browsing with search functionality and pagination
 - Wishlist management
 - Shopping cart
 - Dark mode toggle
 - Responsive design
 - Account deletion
-- Pagination for product listing
-- Password strength indicator during signup
+- Lazy loading for images
+- Skeleton loading screens for improved perceived performance
 
 ## Tech Stack
 
@@ -23,6 +23,8 @@ This is a full-stack e-commerce web application built with React for the fronten
 - Axios for API requests
 - React Icons for UI icons
 - CSS for styling
+- react-lazy-load-image-component for lazy loading images
+
 
 ### Backend
 - Node.js
