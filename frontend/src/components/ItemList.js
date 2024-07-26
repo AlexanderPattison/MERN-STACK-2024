@@ -1,11 +1,14 @@
+// src/components/ItemList.js
 import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { FaHeart, FaShoppingCart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import SearchBar from './SearchBar';
 import ErrorMessage from './ErrorMessage';
-import LoadingSpinner from './LoadingSpinner';
+import SkeletonLoader from './SkeletonLoader';
 import useAPI from '../hooks/useApi';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 function ItemList({ fetchCounts, isAuthenticated }) {
     const [items, setItems] = useState([]);
@@ -119,8 +122,6 @@ function ItemList({ fetchCounts, isAuthenticated }) {
         }
     };
 
-    if (isLoading) return <LoadingSpinner />;
-
     return (
         <div className={`item-list ${darkMode ? 'dark-mode' : ''}`}>
             <h2>Items for Sale</h2>
@@ -133,10 +134,21 @@ function ItemList({ fetchCounts, isAuthenticated }) {
                 </p>
             )}
             <div className="items-grid" role="list">
-                {items.length > 0 ? (
+                {isLoading ? (
+                    Array.from({ length: itemsPerPage }).map((_, index) => (
+                        <SkeletonLoader key={index} />
+                    ))
+                ) : items.length > 0 ? (
                     items.map((item) => (
                         <div key={item._id} className="item-card" role="listitem">
-                            <img src={item.imageUrl} alt={item.name} />
+                            <LazyLoadImage
+                                src={item.imageUrl}
+                                alt={item.name}
+                                effect="blur"
+                                width="100%"
+                                height="200px"
+                                placeholderSrc="/images/placeholder.png"
+                            />
                             <h3>{item.name}</h3>
                             <p>{item.description}</p>
                             <p>Price: ${item.price.toFixed(2)}</p>
