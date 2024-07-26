@@ -62,6 +62,12 @@ const sampleItems = [
         description: "True wireless earbuds with charging case",
         price: 159.99,
         imageUrl: "/images/earbuds.png"
+    },
+    {
+        name: "Classic Retro Radio",
+        description: "This Classic Retro Radio by VintageSound brings you back to the golden age of radio with its nostalgic design and modern technology. It features AM/FM bands, a built-in speaker, and Bluetooth connectivity for streaming your favorite tunes.",
+        price: 49.99,
+        imageUrl: "/images/radio.png"
     }
 ];
 
