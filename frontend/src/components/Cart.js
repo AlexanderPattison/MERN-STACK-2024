@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+// src/components/Cart.js
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
@@ -10,18 +11,18 @@ function Cart({ fetchCounts }) {
     const { darkMode } = useContext(ThemeContext);
     const { isLoading, error, get, put, delete: deleteRequest } = useAPI();
 
-    useEffect(() => {
-        fetchCart();
-    }, []);
-
-    const fetchCart = async () => {
+    const fetchCart = useCallback(async () => {
         try {
             const response = await get('/cart');
             setCartItems(response);
         } catch (error) {
             console.error('Error fetching cart:', error);
         }
-    };
+    }, [get]);
+
+    useEffect(() => {
+        fetchCart();
+    }, [fetchCart]);
 
     const updateQuantity = async (itemId, newQuantity) => {
         if (newQuantity < 1) return; // Prevent decreasing below 1

@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+// src/components/Wishlist.js
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { FaTrash, FaShoppingCart } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
@@ -10,18 +11,18 @@ function Wishlist({ fetchCounts }) {
     const { darkMode } = useContext(ThemeContext);
     const { isLoading, error, get, post, delete: deleteRequest } = useAPI();
 
-    useEffect(() => {
-        fetchWishlist();
-    }, []);
-
-    const fetchWishlist = async () => {
+    const fetchWishlist = useCallback(async () => {
         try {
             const response = await get('/wishlist');
             setWishlistItems(response);
         } catch (error) {
             console.error('Error fetching wishlist:', error);
         }
-    };
+    }, [get]);
+
+    useEffect(() => {
+        fetchWishlist();
+    }, [fetchWishlist]);
 
     const removeFromWishlist = async (itemId) => {
         try {
