@@ -1,5 +1,8 @@
 // src/components/Wishlist.js
+'use client'
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
+import Image from 'next/image';
 import { FaTrash, FaShoppingCart } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
@@ -10,6 +13,7 @@ function Wishlist({ fetchCounts }) {
     const [wishlistItems, setWishlistItems] = useState([]);
     const { darkMode } = useContext(ThemeContext);
     const { isLoading, error, get, post, delete: deleteRequest } = useAPI();
+
 
     const fetchWishlist = useCallback(async () => {
         try {
@@ -53,7 +57,13 @@ function Wishlist({ fetchCounts }) {
                 <ul className="wishlist-items">
                     {wishlistItems.map(item => (
                         <li key={item._id} className="wishlist-item">
-                            <img src={item.imageUrl} alt={item.name} />
+                            <Image
+                                src={item.imageUrl}
+                                alt={item.name}
+                                width={80}
+                                height={80}
+                                layout="fixed"
+                            />
                             <div className="item-info">
                                 <h3>{item.name}</h3>
                                 <p>{item.description}</p>

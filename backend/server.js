@@ -28,7 +28,9 @@ app.use(helmet.contentSecurityPolicy({
 }));
 
 app.use(cors({
-    origin: process.env.NODE_ENV === 'production' ? 'https://yourdomain.com' : 'https://localhost:3000',
+    origin: process.env.NODE_ENV === 'production'
+        ? 'https://yourdomain.com'
+        : 'https://localhost:3000',
     credentials: true,
 }));
 

@@ -1,4 +1,6 @@
 // frontend/src/components/HomePage.js
+'use client'
+
 import React, { useContext } from 'react';
 import ItemList from './ItemList';
 import { AuthContext } from '../contexts/AuthContext';

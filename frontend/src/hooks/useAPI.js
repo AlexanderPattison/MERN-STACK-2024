@@ -1,6 +1,16 @@
-// src/hooks/useAPI.js
+'use client';
+
 import { useState, useCallback } from 'react';
-import api from '../utils/api';
+import axios from 'axios';
+import https from 'https';
+
+const api = axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL || '/api',
+    withCredentials: true,
+    httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+    })
+});
 
 const useAPI = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -8,32 +18,28 @@ const useAPI = () => {
 
     const handleError = (error) => {
         if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
             setError({
                 message: error.response.data.message || 'An error occurred',
                 status: error.response.status,
                 statusText: error.response.statusText,
             });
         } else if (error.request) {
-            // The request was made but no response was received
             setError({
                 message: 'No response received from server',
                 status: 'Network Error',
             });
         } else {
-            // Something happened in setting up the request that triggered an Error
             setError({
                 message: error.message,
                 status: 'Request Error',
             });
         }
+        console.error('Full error object:', error);
     };
 
     const request = useCallback(async (method, url, data = null, options = {}) => {
         setIsLoading(true);
         setError(null);
-
         try {
             const response = await api[method](url, data, options);
             setIsLoading(false);

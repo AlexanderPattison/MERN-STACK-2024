@@ -1,5 +1,8 @@
-// src/components/ItemList.js
+'use client'
+
 import React, { useState, useEffect, useContext, useCallback, useRef } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
 import PropTypes from 'prop-types';
 import { FaHeart, FaShoppingCart, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
@@ -7,7 +10,6 @@ import SearchBar from './SearchBar';
 import ErrorMessage from './ErrorMessage';
 import SkeletonLoader from './SkeletonLoader';
 import useAPI from '../hooks/useApi';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
 function ItemList({ fetchCounts, isAuthenticated }) {
@@ -43,8 +45,8 @@ function ItemList({ fetchCounts, isAuthenticated }) {
 
         try {
             const [wishlistResponse, cartResponse] = await Promise.all([
-                get('/wishlist'),
-                get('/cart')
+                get('/api/wishlist'),
+                get('/api/cart')
             ]);
 
             setWishlist(wishlistResponse.map(item => item._id));
@@ -71,7 +73,7 @@ function ItemList({ fetchCounts, isAuthenticated }) {
 
     const addToWishlist = async (itemId) => {
         try {
-            await post('/wishlist/add', { itemId });
+            await post('/api/wishlist/add', { itemId });
             setWishlist([...wishlist, itemId]);
             if (fetchCounts) fetchCounts();
         } catch (error) {
@@ -81,7 +83,7 @@ function ItemList({ fetchCounts, isAuthenticated }) {
 
     const removeFromWishlist = async (itemId) => {
         try {
-            await deleteRequest(`/wishlist/${itemId}`);
+            await deleteRequest(`/api/wishlist/${itemId}`);
             setWishlist(wishlist.filter(id => id !== itemId));
             if (fetchCounts) fetchCounts();
         } catch (error) {
@@ -91,7 +93,7 @@ function ItemList({ fetchCounts, isAuthenticated }) {
 
     const addToCart = async (itemId, quantity = 1) => {
         try {
-            await post('/cart/add', { itemId, quantity });
+            await post('/api/cart/add', { itemId, quantity });
             setCart(prevCart => ({
                 ...prevCart,
                 [itemId]: (prevCart[itemId] || 0) + quantity
@@ -141,14 +143,15 @@ function ItemList({ fetchCounts, isAuthenticated }) {
                 ) : items.length > 0 ? (
                     items.map((item) => (
                         <div key={item._id} className="item-card" role="listitem">
-                            <LazyLoadImage
-                                src={item.imageUrl}
-                                alt={item.name}
-                                effect="blur"
-                                width="100%"
-                                height="200px"
-                                placeholderSrc="/images/placeholder.png"
-                            />
+                            <Link href={`/products/${item._id}`}>
+                                <Image
+                                    src={item.imageUrl}
+                                    alt={item.name}
+                                    width={200}
+                                    height={200}
+                                    layout="responsive"
+                                />
+                            </Link>
                             <h3>{item.name}</h3>
                             <p>{item.description}</p>
                             <p>Price: ${item.price.toFixed(2)}</p>

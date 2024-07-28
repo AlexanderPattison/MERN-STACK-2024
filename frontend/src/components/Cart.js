@@ -1,5 +1,8 @@
 // src/components/Cart.js
+'use client'
+
 import React, { useState, useEffect, useContext, useCallback } from 'react';
+import Image from 'next/image';
 import { FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { ThemeContext } from '../contexts/ThemeContext';
 import ErrorMessage from './ErrorMessage';
@@ -64,7 +67,13 @@ function Cart({ fetchCounts }) {
                     <ul className="cart-items">
                         {cartItems.map(cartItem => (
                             <li key={cartItem.item._id} className="cart-item">
-                                <img src={cartItem.item.imageUrl} alt={cartItem.item.name} />
+                                <Image
+                                    src={cartItem.item.imageUrl}
+                                    alt={cartItem.item.name}
+                                    width={80}
+                                    height={80}
+                                    layout="fixed"
+                                />
                                 <div className="item-info">
                                     <h3>{cartItem.item.name}</h3>
                                     <p>{cartItem.item.description}</p>

@@ -1,4 +1,6 @@
 // frontend/src/contexts/AuthContext.js
+'use client'
+
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 

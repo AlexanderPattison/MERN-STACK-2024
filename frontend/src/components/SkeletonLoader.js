@@ -1,4 +1,6 @@
 // src/components/SkeletonLoader.js
+'use client'
+
 import React from 'react';
 
 const SkeletonLoader = () => (

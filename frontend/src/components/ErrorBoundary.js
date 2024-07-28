@@ -1,4 +1,6 @@
 // frontend/src/components/ErrorBoundary.js
+'use client'
+
 import React from 'react';
 
 class ErrorBoundary extends React.Component {
