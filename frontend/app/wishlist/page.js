@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import Wishlist from '../../src/components/Wishlist'
-import { useAuth } from '../../src/hooks/useAuth'
+import Wishlist from '../src/components/Wishlist'
+import { useAuth } from '../hooks/useAuth'
 
 export default function WishlistPage() {
     const router = useRouter()

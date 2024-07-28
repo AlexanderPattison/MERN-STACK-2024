@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '../../src/hooks/useAuth'
-import Dashboard from '../../src/components/Dashboard'
+import { useAuth } from '../hooks/useAuth'
+import Dashboard from '../components/Dashboard'
 
 export default function DashboardPage() {
     const { isAuthenticated } = useAuth()

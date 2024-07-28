@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import Login from '../../src/components/Login'
-import { useAuth } from '../../src/hooks/useAuth'
+import Login from '../components/Login'
+import { useAuth } from '../hooks/useAuth'
 
 export default function LoginPage() {
     const router = useRouter()

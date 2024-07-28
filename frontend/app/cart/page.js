@@ -2,8 +2,8 @@
 
 import React from 'react'
 import { useRouter } from 'next/navigation'
-import Cart from '../../src/components/Cart'
-import { useAuth } from '../../src/hooks/useAuth'
+import Cart from '../components/Cart'
+import { useAuth } from '../hooks/useAuth'
 
 export default function CartPage() {
     const router = useRouter()

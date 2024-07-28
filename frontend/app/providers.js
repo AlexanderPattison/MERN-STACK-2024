@@ -1,9 +1,9 @@
 'use client'
 
-import { ThemeProvider } from '../src/contexts/ThemeContext'
-import { AuthProvider } from '../src/contexts/AuthContext'
-import { CartProvider } from '../src/contexts/CartContext'
-import { WishlistProvider } from '../src/contexts/WishlistContext'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { AuthProvider } from './contexts/AuthContext'
+import { CartProvider } from './contexts/CartContext'
+import { WishlistProvider } from './contexts/WishlistContext'
 
 export function Providers({ children }) {
     return (
